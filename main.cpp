@@ -145,13 +145,12 @@ void solve10Task()
         Matrix mat(M + 1);
         vector<double> b;
 
-        mat._main.push_back(
-                            1. / t - V_n[0] / (2 * h)
+        mat._main.push_back (1. / t 
+                            - V_n[0] / (2 * h)
         );
 
-        mat._up.push_back(
-                            V_n[1] / (2 * h)
-        ); 
+        mat._up.push_back (V_n[1] / (2 * h)); 
+
         b.push_back(
                     H_n[0] / t
                     - H_n[0] * (V_n[1] - V_n[0]) / (2 * h)
@@ -164,7 +163,51 @@ void solve10Task()
                                                    )
                                    )
 
-        );   
+        );
+
+        for (int m = 1; m < M; m++)
+        {
+            mat._main.push_back (1. / t);
+
+            mat._down.push_back (
+                                 -V_n[m] / (4 * h)
+                                 - V_n[m - 1] / (4 * h)
+            );
+
+            mat._up.push_back(
+                               V_n[m] / (4 * h)
+                               + V_n[m + 1] / (4 * h) 
+            );
+
+            b.push_back(
+                        H_n[m] / t
+                        - H_n[m] * (V_n[m + 1] - V_n[m - 1]) / (4 * h)
+            );
+        }
+
+        mat._main.push_back(
+                            1 / t
+                            + V_n[M] / (2 * h)
+        );
+
+        mat._down.push_back(
+                  V_n[M - 1] / (2 * h)
+        );
+
+        b.push_back(
+                    H_n[M] / t
+                    - 1/2. * H_n[M] * (V_n[M] - V_n[M - 1]) / h
+                    + 1/2. * h * (
+                                    (H_n[M] * V_n[M] - 2 * H_n[M - 1] * V_n[M - 1] + H_n[M - 2] * V_n[M - 2]) - (h * h)
+                                    - 1/2. * (H_n[M - 1] * V_n[M - 1] - 2 * H_n[M - 2] * V_n[M - 2] + H_n[M - 3] * V_n[M - 3])
+                                    + H_n[M] * (
+                                                    (V_n[M] - 2 * V_n[M - 1] + V_n[M - 2]) / (h * h)
+                                                    - 1/2. * (V_n[M - 1] - 2 * V_n[M - 2] + V_n[M - 3]) / (h * h)
+                                               )
+                               )
+        );
+        mat.three_diag_meth(b, H_n_1);
+
     }
     
 }
