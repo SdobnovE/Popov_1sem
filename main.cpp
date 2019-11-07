@@ -7,15 +7,21 @@ using namespace std;
 
 const double Mu = 0.01;
 const double C = 1;
-const double X = 1;
+const double X = 10;
 const double T = 1;
-const int N = 10;//по t
-const int M = 10;// по x
+const int N = 100;//по t
+const int M = 100;// по x
 const double t = T / N;
 const double h = X / M; 
+const double EPS = 1e-16;
 
 double f0 (double x, double t);
 double f (double x, double t);
+double Ro_0 (double x, double t);
+double u_0(double x, double t);
+double count_residual(vector<double> H, vector<double> V, int num_sloy);
+void solve10Task();
+
 
 class Matrix
 {
@@ -129,6 +135,15 @@ double u_0(double x, double t)
 
 double count_residual(vector<double> H, vector<double> V, int num_sloy)
 {
+    static double resid = 0.0;
+    if (num_sloy < 0)
+        return resid;
+    
+    for (int i = 0; i < N; i++)
+    {
+        if (fabs (f0(h * i, t * num_sloy) - H[i]) > resid)
+            resid = fabs (f0(h * i, t * num_sloy) - H[i]);
+    }
     return 0.;
 }
 
@@ -176,8 +191,10 @@ void solve10Task()
                                                         - 1/2. * (V_n[3] - 2 * V_n[2] + V_n[1]) / (h * h)
                                                    )
                                    )
+                    + f0(h * 0, t * i)
 
         );
+        
 
         for (int m = 1; m < M; m++)
         {
@@ -196,6 +213,7 @@ void solve10Task()
             b.push_back(
                         H_n[m] / t
                         - H_n[m] * (V_n[m + 1] - V_n[m - 1]) / (4 * h)
+                        + f0(h * m, t * i)
             );
         }
 
@@ -219,6 +237,7 @@ void solve10Task()
                                                     - 1/2. * (V_n[M - 1] - 2 * V_n[M - 2] + V_n[M - 3]) / (h * h)
                                                )
                                )
+                    + f0(h * M, t * i)
         );
         mat.three_diag_meth(b, H_n_1);//Посчитали значение H на n+1 слое
         b.clear();
@@ -263,19 +282,10 @@ void solve10Task()
 
 int main()
 {
-    vector<double> main, up, down, b, x;
-    Matrix a(6);
-    a._up = {0,0,0,0,0};
-    a._down = {0,0,0,0,0};
-    a._main = {1,1,1,12,4,5};
-    b = {1,1,1,12,4,5};
-    
-    
-    a.three_diag_meth(b, x);
-    
-    for (auto i: x)
-        cout << i << "\n";  
-    
-    
+     
+    solve10Task();
+    vector<double> b;
+    vector<double> a;
+    printf ("%e\n", count_residual(a, b, -1));
     return 0;
 }
