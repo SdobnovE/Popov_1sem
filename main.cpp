@@ -6,7 +6,7 @@
 using namespace std;
 
 const double Mu = 0.01;
-const double C = 1;
+const double C = 10;
 const double X = 10;
 const double T = 1;
 const int N = 100;//по t
@@ -32,6 +32,48 @@ class Matrix
         int _len;
 
         Matrix (int len): _len(len){}
+        void print()
+        {
+            printf("mid:\n");
+            for (int i = 0; i < _len; i++)
+                printf ("%e ", _main[i]);
+            printf("\n");
+
+            printf("up:\n");
+            for (int i = 0; i < _len - 1; i++)
+                printf ("%e ", _up[i]);
+            printf("\n");
+
+            printf("down:\n");
+            for (int i = 0; i < _len - 1; i++)
+                printf ("%e ", _down[i]);
+            printf("\n");
+            printf("\n");
+            printf("\n");
+        }
+
+        double residual(const vector<double>& f, vector<double>& x)
+        {
+            vector<double> res;
+            this->prod_vec(x, res);
+            double resu = 0;
+            for (int i = 0; i < _len; i++)
+                resu += (res[i] - f[i]) * (res[i] - f[i]);
+            return sqrt (resu);
+
+        }
+
+        void prod_vec (const vector<double>& f, vector<double>& x)
+        {
+            x.clear();
+            x.push_back (_main[0] * f[0] + _up[0] * f[1]);
+            
+            for (int i = 1; i < _len; i++)
+            {
+                x.push_back (_main[i] * f[i] + _up[i] * f[i + 1] + _down[i - 1] * f[i - 1]);
+            }
+            x.push_back(_main.back() * f[_len - 1] + _down.back() * f[_len - 2]);
+        }
 
         void three_diag_meth (const vector<double>& f, vector<double>& x)
         {  
@@ -80,7 +122,7 @@ class Matrix
 double f0 (double x, double t)
 {
     double Ro = exp(t) * (cos (M_PI * x / 10.) + 1.5);
-    double u = cos(2 * M_PI * t) * sin (M_PI * x * x / 100);
+    
     double res = 0;
     res = Ro;
     res += exp(t) * cos(2 * M_PI * t) *
@@ -108,8 +150,7 @@ double f (double x, double t)
     double d2u_dx2 = -M_PI * cos(2 * M_PI * t) / 2500.;//+
     
     d2u_dx2 *= M_PI * x * x * sin(M_PI * x * x / 100.)
-               -
-               50 * cos(M_PI * x * x / 100);//+
+               - 50 * cos(M_PI * x * x / 100);//+
     
     
     double res = Ro * du_dt 
@@ -127,7 +168,7 @@ double Ro_0 (double x, double t)
     return Ro;
 }
 
-double u_0(double x, double t)
+double u_0 (double x, double t)
 {
     double u = cos(2 * M_PI * t) * sin (M_PI * x * x / 100);//+
     return u;
@@ -139,18 +180,27 @@ double count_residual(vector<double> H, vector<double> V, int num_sloy)
     if (num_sloy < 0)
         return resid;
     
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < N + 1; i++)
     {
-        if (fabs (f0(h * i, t * num_sloy) - H[i]) > resid)
-            resid = fabs (f0(h * i, t * num_sloy) - H[i]);
+        if (fabs (Ro_0(h * i, t * num_sloy) - H[i]) > resid)
+            resid = fabs (Ro_0(h * i, t * num_sloy) - H[i]);
     }
-    return 0.;
+
+    for (int i = 0; i < M + 1; i++)
+    {
+        if (fabs (u_0 (h * i, t * num_sloy) - V[i]) > resid)
+            resid = fabs (u_0 (h * i, t * num_sloy) - V[i]);
+    }
+
+    
+    return resid;
 }
 
 void solve10Task()
 {
     vector<double> H_n;
     vector<double> H_n_1;
+    
     vector<double> V_n;
     vector<double> V_n_1;
 
@@ -160,21 +210,24 @@ void solve10Task()
         V_n_1.push_back (u_0 (h * m, 0));
     }
 
+    count_residual (H_n_1, V_n_1, 0);
+
     for (int i = 1; i < N + 1; i++)
     {
         H_n.clear();
         V_n.clear();
+        //cout << H_n.size() << endl;
+        for (auto i1 : H_n_1)
+            H_n.push_back(i1);
 
-        for (auto i : H_n_1)
-            H_n.push_back(i);
-
-        for (auto i : V_n_1)
-            V_n.push_back(i);
+        for (auto i1 : V_n_1)
+            V_n.push_back(i1);
 
         Matrix mat(M + 1);
         vector<double> b;
 
-        mat._main.push_back (1. / t 
+        mat._main.push_back (
+                            1. / t 
                             - V_n[0] / (2 * h)
         );
 
@@ -193,10 +246,10 @@ void solve10Task()
                                    )
                     + f0(h * 0, t * i)
 
-        );
+        );//Почему не делить на h*h
         
 
-        for (int m = 1; m < M; m++)
+        for (int m = 1; m < M; m++)////Сто проц верный цикл
         {
             mat._main.push_back (1. / t);
 
@@ -223,13 +276,13 @@ void solve10Task()
         );
 
         mat._down.push_back(
-                  V_n[M - 1] / (2 * h)
-        );
+                  -V_n[M - 1] / (2 * h)
+        );//Возможно минус
 
         b.push_back(
                     H_n[M] / t
                     - 1/2. * H_n[M] * (V_n[M] - V_n[M - 1]) / h
-                    + 1/2. * h * (
+                    - 1/2. * h * (
                                     (H_n[M] * V_n[M] - 2 * H_n[M - 1] * V_n[M - 1] + H_n[M - 2] * V_n[M - 2]) / (h * h)
                                     - 1/2. * (H_n[M - 1] * V_n[M - 1] - 2 * H_n[M - 2] * V_n[M - 2] + H_n[M - 3] * V_n[M - 3]) / (h * h)
                                     + H_n[M] * (
@@ -239,11 +292,21 @@ void solve10Task()
                                )
                     + f0(h * M, t * i)
         );
+        
         mat.three_diag_meth(b, H_n_1);//Посчитали значение H на n+1 слое
+        // cout << "res " << mat.residual(b, H_n_1) << endl;
+        
+
+        //mat.print();
+        mat._main.clear();
+        mat._up.clear();
+        mat._down.clear();
         b.clear();
 
-        V_n.push_back(1);
+        mat._main.push_back(1);
+        mat._up.push_back(0);
         b.push_back(0);
+
         for (int m = 1; m < M; m++)
         {
             mat._main.push_back (
@@ -264,17 +327,24 @@ void solve10Task()
             );
 
             b.push_back(
-                        H_n_1[m] * f(h * m, t * (i + 1))
+                        H_n_1[m] * f(h * m, t * (i))
                         + H_n[m] * V_n[m] / t
                         - 1/3. * V_n[m] * V_n[m] * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
                         - C * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
             );
         }
 
-        V_n.push_back(1);
+        mat._down.push_back(0);
+        mat._main.push_back(1);
         b.push_back(0);
+        //mat.print();
+        
         mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое
+        // cout << "VALUES: " << V_n_1[0] << " " << V_n_1[N] << endl;
+        // cout << "res " << mat.residual(b, V_n_1) << endl;
+        // cout << b.size() << endl;
         count_residual(H_n_1, V_n_1, i);
+        
     }
     
 }
@@ -287,5 +357,16 @@ int main()
     vector<double> b;
     vector<double> a;
     printf ("%e\n", count_residual(a, b, -1));
+
+    // Matrix A(5);
+    // A._main = {1,1,1,1,1};
+    // A._up = {-2,4,-2,-2};
+    // A._down = {2,2,2,2};
+    // vector<double> b, x;
+    // b = {1,1,1,1,1};
+    // A.three_diag_meth(b, x);
+    // cout <<A.residual(b, x) << endl;
+    
+    
     return 0;
 }
