@@ -9,8 +9,8 @@ const double Mu = 0.01;
 const double C = 10;
 const double X = 10;
 const double T = 1;
-const int N = 5;//по t
-const int M = 5;// по x
+const int N = 500;//по t
+const int M = 500;// по x
 const double t = T / N;
 const double h = X / M; 
 const double EPS = 1e-16;
@@ -48,8 +48,7 @@ class Matrix
             for (int i = 0; i < _len - 1; i++)
                 printf ("%e ", _down[i]);
             printf("\n");
-            printf("\n");
-            printf("\n");
+            
         }
 
         double residual(const vector<double>& f, vector<double>& x)
@@ -248,21 +247,27 @@ void solve10Task()
         
         mat._up.push_back (V_n[1] / (2 * h)); 
 
-        
-        b.push_back(
-                    H_n[0] / t
-                    - H_n[0] * (V_n[1] - V_n[0]) / (2 * h)
-                    - 1/2. * h * (
-                                        (H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]) / (h * h)
-                                        - 1/2. * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1]) / (h * h)
-                                        + H_n[0] * (
-                                                        (V_n[2] - 2 * V_n[1] + V_n[0]) / (h * h)
-                                                        - 1/2. * (V_n[3] - 2 * V_n[2] + V_n[1]) / (h * h)
-                                                   )
-                                   )
-                    + f0(i, 0)
+        b.push_back(-H_n[0]*V_n[1]/(2.0*h)+(1/(2.0*h))*(H_n[2]*V_n[2]
+                -2*H_n[1]*V_n[1]+H_n[0]*V_n[0]
+                -0.5*(H_n[3]*V_n[3]-2*H_n[2]*V_n[2]+H_n[1]*V_n[1])
+                +H_n[0]*(V_n[2]-2*V_n[1]+V_n[0]-0.5*(V_n[3]-2*V_n[2]+V_n[1])))+
+                H_n[0]/t+f0(i,0));
 
-         );//Почему не делить на h*h
+
+        // b.push_back(
+        //             H_n[0] / t
+        //             - H_n[0] * (V_n[1] - V_n[0]) / (2 * h)
+        //             - 1/2. * h * (
+        //                                 (H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]) / (h * h)
+        //                                 - 1/2. * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1]) / (h * h)
+        //                                 + H_n[0] * (
+        //                                                 (V_n[2] - 2 * V_n[1] + V_n[0]) / (h * h)
+        //                                                 - 1/2. * (V_n[3] - 2 * V_n[2] + V_n[1]) / (h * h)
+        //                                            )
+        //                            )
+        //             + f0(i, 0)
+
+        //  );//Почему не делить на h*h
          //printf ("F0  %e %e %e\n", i * t, 0 * h, f0(i,0));
 
         for (int m = 1; m < M; m++)////Сто проц верный цикл
@@ -319,14 +324,14 @@ void solve10Task()
 
         mat.three_diag_meth(b, H_n_1);//Посчитали значение H на n+1 слое
         // // cout << "res " << mat.residual(b, H_n_1) << endl;
-        mat.print();
-        for (auto i : b)
-            printf("b %e ", i);
-        printf("\n");
+        // mat.print();
+        // for (auto i : b)
+        //     printf("b %e ", i);
+        // printf("\n");printf("\n");
 
-        for (auto i : H_n_1)
-            printf("ans %e ", i);
-        printf("\n");
+        // for (auto i : H_n_1)
+        //     printf("ans %e ", i);
+        // printf("\n");
 
         //mat.print();
         mat._main.clear();
@@ -420,26 +425,36 @@ void solve10Task()
             
         }
 
-        // for (auto i : b)
-        //     printf("%e ", i);
-        // printf("\n");
+        
 
         mat._down.push_back(0);
         mat._main.push_back(1);
         b.push_back(0);
-
-        //mat.print();
+        mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое    
+        
+        
+        // mat.print();
         // for (auto i : b)
-        //     printf("a %e ", i);
+        //     printf("b %e ", i);
         // printf("\n");
-        mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое
+
+        // for (auto i : V_n_1)
+        //     printf("ans %e ", i);
+        // printf("\n");printf("\n");
+
+
+
+        
         //cout << "VALUES: " << V_n_1[0] << " " << V_n_1[N] << endl;
         //cout << "res " << mat.residual(b, V_n_1) << endl;
         // cout << b.size() << endl;
         count_residual(H_n_1, V_n_1, i);
-        // for (auto i : V_n_1)
+        // for (auto i : H_n_1)
         //     printf("ans %e ", i);
         // printf("\n");
+        // for (auto i : V_n_1)
+        //     printf("ans %e ", i);
+        // printf("\n");printf("\n");
         
     }
     

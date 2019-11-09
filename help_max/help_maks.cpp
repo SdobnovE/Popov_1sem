@@ -5,7 +5,7 @@ int K;
 double f0(int i,int j,double t,double h);
 double f(int i,int j,double t,double h,double mu);
 double p(double x);
-int main(int argc, char*argv[])
+int main(int argc, char*argv[])// C N M MU
 {
     argc=argc;
     int N,M;
@@ -22,30 +22,40 @@ int main(int argc, char*argv[])
     double mu;
     double cur=1.;
     double h=10./M,t=1./N;
-    sscanf(argv[4],"%lf",&mu);
+    sscanf(argv[4], "%lf", &mu);
     for(int i=0;i<(N+1)*(M+1);i++)
     {
         H[i]=V[i]=0.0;
     }
-    for(int i=0;i<3*(M+1);i++)
+
+    for (int i=0;i<3*(M+1);i++)
     {
         a[i]=0.0;
     }
-    for(int j=0;j<=M;j++)
+
+    for (int j=0;j<=M + 1;j++)
     {
         H[0*(M+1)+j]=(cos(M_PI*j*h/10.)+1.5);
         V[0*(M+1)+j]=sin(M_PI*j*j*h*h/100.);
     }
-
-    for(int i=0;i<N;i++)
+    ///////////////////////////////////////////////////////////////////////////////////////////+
+    // for (int i = 0; i < M + 1; i++)
+    //     printf("%e ", H[i]);
+    // printf("\n");
+    
+    // for (int i = 0; i < M + 1; i++)
+    //     printf("%e ", V[i]);
+    // printf("\n");
+    for (int i = 0; i < N; i++)
     {
-        a[0+M+1]=1./t;
-        a[0]=V[i*(M+1)+1]/(2.0*h);
-        b[0]=-H[i*(M+1)+0]*V[i*(M+1)+1]/(2.0*h)+(1/(2.0*h))*(H[i*(M+1)+2]*V[i*(M+1)+2]
+        a[0+M+1]=1./t;//+
+        a[0]=V[i*(M+1)+1]/(2.0*h);//+
+        //printf ("F0  %e %e %e\n", i * t, 0 * h, f0(i,0,t,h));
+        b[0]= -H[i*(M+1)+0] * V[i*(M+1)+1] / (2.0*h) - (1/(2.0*h)) * (H[i*(M+1)+2] * V[i*(M+1)+2]
                 -2*H[i*(M+1)+1]*V[i*(M+1)+1]+H[i*(M+1)+0]*V[i*(M+1)+0]
                 -0.5*(H[i*(M+1)+3]*V[i*(M+1)+3]-2*H[i*(M+1)+2]*V[i*(M+1)+2]+H[i*(M+1)+1]*V[i*(M+1)+1])
-                +H[i*(M+1)+0]*(V[i*(M+1)+2]-2*V[i*(M+1)+1]+V[i*(M+1)+0]-0.5*(V[i*(M+1)+3]-2*V[i*(M+1)+2]+V[i*(M+1)+1])))+
-                H[i*(M+1)+0]/t+f0(i,0,t,h);
+                +H[i*(M+1)+0]*(V[i*(M+1)+2]-2*V[i*(M+1)+1]+V[i*(M+1)+0]-0.5*(V[i*(M+1)+3]-2*V[i*(M+1)+2]+V[i*(M+1)+1])))
+                +H[i*(M+1)+0]/t + f0(i,0,t,h);
         
 
         for(int j=1;j<M;j++)
@@ -54,30 +64,32 @@ int main(int argc, char*argv[])
             a[j+M+1]=1./t;
             a[j]=(1./(4.*h))*(V[i*(M+1)+j+1]+V[i*(M+1)+j]);
             b[j]=f0(i,j,t,h)-H[i*(M+1)+j]*(V[i*(M+1)+j+1]-V[i*(M+1)+j-1])/(4.*h)+H[i*(M+1)+j]/t;
-            
+            //printf ("\t%e\n", f0(i,j,t,h));
         }
-        a[M+2*(M+1)]=-0.5*V[i*(M+1)+M-1]/h;
+        a[M+2*(M+1)]= -0.5*V[i*(M+1)+M-1]/h;
         a[M+(M+1)]=1./t+0.5*V[i*(M+1)+M]/h;
+
         b[M]=H[i*(M+1)+M]/t-0.5*H[i*(M+1)+M]*(V[i*(M+1)+M]-V[i*(M+1)+M-1])/h-0.5*h*((H[i*(M+1)+M]*V[i*(M+1)+M]-
                 2.*H[i*(M+1)+M-1]*V[i*(M+1)+M-1]+H[i*(M+1)+M-2]*V[i*(M+1)+M-2])/(h*h)-
                 0.5*(H[i*(M+1)+M-1]*V[i*(M+1)+M-1]-2.*H[i*(M+1)+M-2]*V[i*(M+1)+M-2]+H[i*(M+1)+M-3]*V[i*(M+1)+M-3])/(h*h)+
                 H[i*(M+1)+M]*((V[i*(M+1)+M]-2*V[i*(M+1)+M-1]+V[i*(M+1)+M-2])/(h*h)-
                 0.5*(V[i*(M+1)+M-1]-2*V[i*(M+1)+M-2]+V[i*(M+1)+M-3])/(h*h)))+f0(i,M,t,h);
-       
-        /////////////////////////////////////////////////////////////////////////////////////
-        for (int i = 0; i < M + 1; i++)
-            printf("%e ", a[i + 1*(M+1)]);
-        printf("\n");
-        for (int i = 0; i < M + 1; i++)
-            printf("%e ", a[i + 0*(M+1)]);
-        printf("\n");
-        for (int i = 0; i < M + 1; i++)
-            printf("%e ", a[i + 2*(M+1)]);
-        printf("\n");
+                
         
-        for (int j = 0; j < M + 1; j++)
-            printf("b %e ", b[j]);
-        printf("\n");printf("\n");
+        // for (int i = 0; i < M + 1; i++)
+        //     printf("%e ", a[i + 1*(M+1)]);
+        // printf("\n");
+        // for (int i = 0; i < M + 1; i++)
+        //     printf("%e ", a[i + 0*(M+1)]);
+        // printf("\n");
+        // for (int i = 0; i < M + 1; i++)
+        //     printf("%e ", a[i + 2*(M+1)]);
+        // printf("\n");
+        
+        // for (int j = 0; j < M + 1; j++)
+        //     printf("b %e ", b[j]);
+        // printf("\n");
+
         for(int j=1;j<=M;j++)
         {
             cur=1./a[j-1+M+1];
@@ -98,7 +110,7 @@ int main(int argc, char*argv[])
         {
             H[(i+1)*(M+1)+j]=b[j];
         }
-
+        
         for(int j=0;j<=M;j++)
         {
             b[j]=0.;
@@ -107,7 +119,9 @@ int main(int argc, char*argv[])
         {
             a[j]=0.;
         }
+
         max=1./H[(i+1)*(M+1)+0];
+        
         for(int j=1;j<=M;j++)
         {
          if(1./H[(i+1)*(M+1)+j]>max)
@@ -116,6 +130,19 @@ int main(int argc, char*argv[])
          }
         }
         max=mu*max;
+
+        // for (int j = 0; j < M + 1; j++)
+        //     printf("ans %e ", H[(i+1)*(M+1)+j]);
+        // printf("\n");printf("\n");
+
+        // printf("Max %e\n", max);
+
+
+
+
+
+
+
         for(int j=1;j<M;j++)
         {
             a[j+2*(M+1)]=-(V[i*(M+1)+j]+V[i*(M+1)+j-1])/(6*h)-max/(h*h);
@@ -126,6 +153,22 @@ int main(int argc, char*argv[])
             
         }
 
+        // for (int i = 0; i < M + 1; i++)
+        //     printf("%e ", a[i + 1*(M+1)]);
+        // printf("\n");
+        // for (int i = 0; i < M + 1; i++)
+        //     printf("%e ", a[i + 0*(M+1)]);
+        // printf("\n");
+        // for (int i = 0; i < M + 1; i++)
+        //     printf("%e ", a[i + 2*(M+1)]);
+        // printf("\n");
+        
+        // for (int j = 0; j < M + 1; j++)
+        //     printf("b %e ", b[j]);
+        // printf("\n");
+        
+
+        
         for(int j=2;j<M;j++)
         {
             cur=1./a[j-1+M+1];
@@ -144,7 +187,13 @@ int main(int argc, char*argv[])
         {
             V[(i+1)*(M+1)+j]=b[j];
         }
-
+        //V[(i+1)*(M+1)+0]=0.;
+        // for (int j = 0; j < M + 1; j++)
+        //     printf("ans %e ", H[(i+1)*(M+1)+j]);
+        // printf("\n");
+        // for (int j = 0; j < M + 1; j++)
+        //     printf("ans %e ", V[(i+1)*(M+1)+j]);
+        // printf("\n");printf("\n");
 
     }
 
@@ -160,7 +209,25 @@ int main(int argc, char*argv[])
             }
          }
      }
-     
+     /*
+     for(int i=0;i<=N&&i<=20;i++)
+     {
+         for(int j=0;j<=M&&j<=5;j++)
+         {
+             printf("%e ",fabs(exp(i*t)*(cos(M_PI*j*h/10.)+1.5)-H[i*(M+1)+j]));
+         }
+         printf("\n");
+     }
+          printf("\n");
+     for(int i=0;i<=N&&i<=20;i++)
+     {
+         for(int j=0;j<=M&&j<=5;j++)
+         {
+            printf("%e ",fabs(cos(2.*M_PI*i*t)*sin(M_PI*j*j*h*h/100.)-V[i*(M+1)+j]));
+         }
+         printf("\n");
+     }
+     */
      char text[256];
      sprintf(text,"o_%d_%d.txt",N,M);
      FILE*rr=fopen(text,"w");
