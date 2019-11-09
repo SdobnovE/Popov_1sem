@@ -9,8 +9,8 @@ const double Mu = 0.01;
 const double C = 10;
 const double X = 10;
 const double T = 1;
-const int N = 100;//по t
-const int M = 100;// по x
+const int N = 5;//по t
+const int M = 5;// по x
 const double t = T / N;
 const double h = X / M; 
 const double EPS = 1e-16;
@@ -119,46 +119,54 @@ class Matrix
         }
 };
 
-double f0 (double x, double t)
+double f0 (int i, int j)
 {
-    double Ro = exp(t) * (cos (M_PI * x / 10.) + 1.5);
+    double x = j * h;
+    double Ro = exp(t * i) * (cos (M_PI * x / 10.) + 1.5);
     
     double res = 0;
     res = Ro;
-    res += exp(t) * cos(2 * M_PI * t) *
+    res += exp(t * i) * cos(2 * M_PI * t * i) *
             (
                 -M_PI / 10. * sin(M_PI * x / 10.) * sin(M_PI * x * x / 100.) 
                 + 
                  M_PI * x / 50. * cos(M_PI * x * x / 100.) * (cos(M_PI * x / 10.) + 1.5)
             );
     return res;
+    // return exp(i*t)*(cos(M_PI*j*h/10.)+1.5)+
+    //         exp(i*t)*cos(2.*M_PI*i*t)*(-M_PI*sin(M_PI*h*j/10.)*sin(M_PI*h*h*j*j/100.)/10.+
+    // (M_PI*j*h/50.)*cos(M_PI*h*j*h*j/100.)*(cos(M_PI*h*j/10.)+1.5));
 }
 
 
-double f (double x, double t)
+double f (int i, int j)
 {
-    double Ro = exp(t) * (cos (M_PI * x / 10.) + 1.5);//+
+    // double Ro = exp(t) * (cos (M_PI * x / 10.) + 1.5);//+
 
-    double u = cos(2 * M_PI * t) * sin (M_PI * x * x / 100);//+
+    // double u = cos(2 * M_PI * t) * sin (M_PI * x * x / 100);//+
 
-    double du_dt = sin(M_PI * x * x / 100.) * (-2 * M_PI * sin(2 * M_PI * t));//+
+    // double du_dt = sin(M_PI * x * x / 100.) * (-2 * M_PI * sin(2 * M_PI * t));//+
 
-    double du_dx = cos(2 * M_PI * t) * cos(M_PI * x * x / 100.) * 2 * M_PI * x / 100.;//+
+    // double du_dx = cos(2 * M_PI * t) * cos(M_PI * x * x / 100.) * 2 * M_PI * x / 100.;//+
 
-    double dRo_dx = exp(t) * (-M_PI / 10. * sin(M_PI * x / 10.));//+
+    // double dRo_dx = exp(t) * (-M_PI / 10. * sin(M_PI * x / 10.));//+
 
-    double d2u_dx2 = -M_PI * cos(2 * M_PI * t) / 2500.;//+
+    // double d2u_dx2 = -M_PI * cos(2 * M_PI * t) / 2500.;//+
     
-    d2u_dx2 *= M_PI * x * x * sin(M_PI * x * x / 100.)
-               - 50 * cos(M_PI * x * x / 100);//+
+    // d2u_dx2 *= M_PI * x * x * sin(M_PI * x * x / 100.)
+    //            - 50 * cos(M_PI * x * x / 100);//+
     
     
-    double res = Ro * du_dt 
-                + Ro * u * du_dx 
-                + dRo_dx
-                - Mu * d2u_dx2;//+
-    res /= Ro;
-    return res;
+    // double res = Ro * du_dt 
+    //             + Ro * u * du_dx 
+    //             + dRo_dx
+    //             - Mu * d2u_dx2;//+
+    // res /= Ro;
+    // return res;
+    return (-exp(i*t)*(cos(M_PI*h*j/10.)+1.5)*2.*M_PI*sin(2.*M_PI*i*t)*sin(M_PI*j*j*h*h/100.)+
+    exp(i*t)*(cos(M_PI*j*h/10.)+1.5)*sin(M_PI*j*j*h*h/100.)*cos(2.*M_PI*i*t)*cos(2.*M_PI*i*t)*(M_PI*h*j/50.)*cos(M_PI*j*j*h*h/100.)-
+    C*(M_PI/10.)*exp(i*t)*sin(M_PI*h*j/10.)-
+    Mu*cos(2.*M_PI*i*t)*((M_PI/50.)*cos(M_PI*j*h*j*h/100.)-(M_PI*M_PI*j*j*h*h/2500)*sin(M_PI*j*h*j*h/100.)))/(exp(i*t)*(cos(M_PI*j*h/10.)+1.5));
 
 }
 
@@ -206,13 +214,20 @@ void solve10Task()
 
     for (int m = 0; m < M + 1; m++)//Начальные условия
     {
+        
         H_n_1.push_back (Ro_0 (h * m, 0));
         V_n_1.push_back (u_0 (h * m, 0));
-    }
+    }//Ok
 
-    count_residual (H_n_1, V_n_1, 0);
+    // for (int i = 0; i < M + 1; i++)
+    //     printf("%e ", H_n_1[i]);
+    // printf("\n");
+    
+    // for (int i = 0; i < M + 1; i++)
+    //     printf("%e ", V_n_1[i]);
+    // printf("\n");
 
-    for (int i = 1; i < N + 1; i++)
+    for (int i = 0; i < N; i++)
     {
         H_n.clear();
         V_n.clear();
@@ -230,13 +245,14 @@ void solve10Task()
                             1. / t 
                             - V_n[0] / (2 * h)
         );
-
+        
         mat._up.push_back (V_n[1] / (2 * h)); 
 
+        
         b.push_back(
                     H_n[0] / t
                     - H_n[0] * (V_n[1] - V_n[0]) / (2 * h)
-                    + 1/2. * h * (
+                    - 1/2. * h * (
                                         (H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]) / (h * h)
                                         - 1/2. * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1]) / (h * h)
                                         + H_n[0] * (
@@ -244,10 +260,10 @@ void solve10Task()
                                                         - 1/2. * (V_n[3] - 2 * V_n[2] + V_n[1]) / (h * h)
                                                    )
                                    )
-                    + f0(h * 0, t * i)
+                    + f0(i, 0)
 
-        );//Почему не делить на h*h
-        
+         );//Почему не делить на h*h
+         //printf ("F0  %e %e %e\n", i * t, 0 * h, f0(i,0));
 
         for (int m = 1; m < M; m++)////Сто проц верный цикл
         {
@@ -263,11 +279,13 @@ void solve10Task()
                                + V_n[m + 1] / (4 * h) 
             );
 
+            
             b.push_back(
                         H_n[m] / t
                         - H_n[m] * (V_n[m + 1] - V_n[m - 1]) / (4 * h)
-                        + f0(h * m, t * i)
+                        + f0(i, m)
             );
+            //printf ("\t%e\n", f0(i, m));
         }
 
         mat._main.push_back(
@@ -290,12 +308,25 @@ void solve10Task()
                                                     - 1/2. * (V_n[M - 1] - 2 * V_n[M - 2] + V_n[M - 3]) / (h * h)
                                                )
                                )
-                    + f0(h * M, t * i)
+                    + f0(i, M)
         );
+        //
         
+
+        // for (auto i : b)
+        //     printf("%e ", i);
+        // printf("\n");
+
         mat.three_diag_meth(b, H_n_1);//Посчитали значение H на n+1 слое
-        // cout << "res " << mat.residual(b, H_n_1) << endl;
-        
+        // // cout << "res " << mat.residual(b, H_n_1) << endl;
+        mat.print();
+        for (auto i : b)
+            printf("b %e ", i);
+        printf("\n");
+
+        for (auto i : H_n_1)
+            printf("ans %e ", i);
+        printf("\n");
 
         //mat.print();
         mat._main.clear();
@@ -303,47 +334,112 @@ void solve10Task()
         mat._down.clear();
         b.clear();
 
-        mat._main.push_back(1);
-        mat._up.push_back(0);
-        b.push_back(0);
+        // mat._main.push_back(1);
+        // mat._up.push_back(0);
+        // b.push_back(0);
 
+        // for (int m = 1; m < M; m++)
+        // {
+        //     mat._main.push_back (
+        //                          H_n_1[m] / t
+        //                          + 2 * Mu / (h * h)
+        //     );
+
+        //     mat._down.push_back (
+        //                          -Mu / (h * h)
+        //                          - H_n_1[m - 1] * V_n[m - 1] / (3 * h)
+        //                          - H_n_1[m] * V_n[m] / (3 * h)
+        //     );
+
+        //     mat._up.push_back(
+        //                        -Mu / (h * h)
+        //                        + H_n_1[m + 1] * V_n[m + 1] / (3 * h)
+        //                        + H_n_1[m] * V_n[m] / (3 * h)
+        //     );
+
+        //     b.push_back(
+        //                 H_n_1[m] * f(h * m, t * (i))
+        //                 + H_n[m] * V_n[m] / t
+        //                 - 1/3. * V_n[m] * V_n[m] * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
+        //                 -  C * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
+        //     );
+        // }
+
+        /*
+        double Max = Mu / H_n_1[0];
         for (int m = 1; m < M; m++)
         {
-            mat._main.push_back (
-                                 H_n_1[m] / t
-                                 + 2 * Mu / (h * h)
-            );
+            if( Max < Mu / H_n_1[m])
+                Max = Mu / H_n_1[m];
+        }
+        for (int m = 1; m < M; m++)
+        {
+            mat._main.push_back(1. / t + 2 * Max / (h * h));
 
-            mat._down.push_back (
-                                 -Mu / (h * h)
-                                 - H_n_1[m - 1] * V_n[m - 1] / (3 * h)
-                                 - H_n_1[m] * V_n[m] / (3 * h)
-            );
+            mat._down.push_back(-(V_n[m]+V_n[m-1])/(6*h)-Max/(h*h));
 
-            mat._up.push_back(
-                               -Mu / (h * h)
-                               + H_n_1[m + 1] * V_n[m + 1] / (3 * h)
-                               + H_n_1[m] * V_n[m] / (3 * h)
-            );
+            mat._up.push_back((V_n[m]+V_n[m+1])/(6*h)-Max/(h*h));
 
-            b.push_back(
-                        H_n_1[m] * f(h * m, t * (i))
-                        + H_n[m] * V_n[m] / t
-                        - 1/3. * V_n[m] * V_n[m] * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
-                        - C * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
-            );
+            b.push_back(V_n[m]/t-(C*(H_n_1[m+1])- C*(H_n_1[m-1]))/(2.*h*H_n_1[m])-(Max-Mu/H_n_1[m])*(V_n[m+1]-2*V_n[m]+V_n[m-1])/(h*h)+f(m, i));
         }
 
         mat._down.push_back(0);
         mat._main.push_back(1);
         b.push_back(0);
         //mat.print();
+        */
+
+       double max=1./H_n_1[0];
         
+        for(int j=1;j<=M;j++)
+        {
+         if(1./H_n_1[j]>max)
+         {
+             max=1./H_n_1[j];
+         }
+        }
+        max=Mu*max;
+        //printf("Max %e\n", max);
+        double mu = Mu;
+        mat._main.push_back(1);
+        mat._up.push_back(0);
+        b.push_back(0);
+
+        for(int j=1;j<M;j++)
+        {
+
+            
+            mat._down.push_back(-(V_n[j]+V_n[j-1])/(6*h)-max/(h*h));
+
+            mat._main.push_back(1./t+2.*max/(h*h));
+            
+            mat._up.push_back((V_n[j]+V_n[j+1])/(6*h)-max/(h*h));
+
+            b.push_back(V_n[j]/t-(C*(H_n_1[j+1])-C*(H_n_1[j-1]))/(2.*h*H_n_1[j])-
+                    (max-mu/H_n_1[j])*(V_n[j+1]-2*V_n[j]+V_n[j-1])/(h*h)+f(i, j)/*+f0(i,j,t,h)*/);
+            
+        }
+
+        // for (auto i : b)
+        //     printf("%e ", i);
+        // printf("\n");
+
+        mat._down.push_back(0);
+        mat._main.push_back(1);
+        b.push_back(0);
+
+        //mat.print();
+        // for (auto i : b)
+        //     printf("a %e ", i);
+        // printf("\n");
         mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое
-        // cout << "VALUES: " << V_n_1[0] << " " << V_n_1[N] << endl;
-        // cout << "res " << mat.residual(b, V_n_1) << endl;
+        //cout << "VALUES: " << V_n_1[0] << " " << V_n_1[N] << endl;
+        //cout << "res " << mat.residual(b, V_n_1) << endl;
         // cout << b.size() << endl;
         count_residual(H_n_1, V_n_1, i);
+        // for (auto i : V_n_1)
+        //     printf("ans %e ", i);
+        // printf("\n");
         
     }
     

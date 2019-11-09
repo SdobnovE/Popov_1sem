@@ -1,0 +1,375 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage{graphics}
+\usepackage{amsthm}
+\usepackage{amsbsy}
+\usepackage{mathtext}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{../difequation/}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\newtheorem{theorem}{Теорема}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\Coef}{Coef}
+\begin{document}
+\begin{center}
+\Large\bf ОТЧЕТ \\
+По реализации схемы А.Г. Соколова 
+ПЛОТНОСТЬ-ИМПУЛЬС для решения задачи о движении газа
+
+\end{center}
+\section{Постановка задачи}
+
+Рассмотрим движение газа в одномерной области.
+Оно описывается системой дифференциальных уравнений :
+\begin{equation}
+\label{eq:1}
+\begin{cases}
+\frac {\partial \rho} {\partial t} + \frac{\partial \rho u} {\partial x} = 0 
+\\
+\frac {\partial \rho u} {\partial t} + \frac {\partial \rho u^2} {\partial x} + \frac {\partial p} {\partial x} = \mu \frac {\partial^2 u} {\partial x^2} + \rho f,
+\end{cases}
+\end{equation}
+Где $\rho$ - плотность газа, $u$ - скорость газа, $p = p(\rho) = \rho ^ \gamma$ - давление газа ($\gamma$ обычно равно $1.4$).
+$\mu$ - вязкость газа, обычно в диапозоне $[0.0001, 0.1]$.
+
+С начальными условиями
+\begin{equation}
+(\rho, u)|_{t = 0} = (\rho_0, u_0)
+\end{equation}
+и граничными условиями непротекания:
+\begin{equation}
+u(t,X_0) = u(t,X_1) = 0.
+\end{equation}
+
+Заметим, что в разностной схеме, описанной ниже, этих условий достаточно (Граничные условия на плотность газа не ставятся).
+
+\section {Разностная схема}
+
+Рассмотрим разностную схему А.Г. Соколова ПЛОТНОСТЬ-ИМПУЛЬС на отрезке $[X_0, X_1]$ с равномерным разбиением с шагом $h$ и шагом по времени $\tau$.
+Т.е. $x_i = X_0 + i * h, \ i = 0,\ldots, M$, $h = (X_1 - X_0) / M$ (для скорости).
+
+Разбиение для плотности $H$ отличается, $x_i = X_0 + (i + 1/2) * h,\ i = 0,\ldots,M-1 $.
+
+Рассмотрим приближение скорости V и приближение плотности H и распишем в этих обозначениях систему дифференциальных уравнений:
+\begin{equation}
+\label{eq:2}
+\begin{cases}
+H_t + (\sigma \{\hat{H}, V\} V)_x = 0, \ 0\le m < M, n\ge 0,
+\\
+(H_{\bar{s}}V)_t + \frac {1}{2} \big{(} (\sigma \{ \hat{H}\hat{V}, V \} V)_x + (\sigma \{ \hat{H}\hat{V}^{+1}, V\} V)_{\bar{x}} \big{)} + \frac {\gamma} {\gamma - 1} \hat {H}_{\bar{s}} ((\hat{H})^{\gamma-1})_{\bar{x}} = \mu \hat {V}_{x\bar{x}} + \hat{H}_{\bar{s}} f, \text{при} \hat{H}_{\bar{s}} \ne 0,
+\\
+\hat{V} = 0, \text{при}\  \hat{H}_{\bar{s}} = 0,
+\\
+0 < m < M,\ n \ge 0,
+\\
+\hat{V_0} = \hat{V}_M = 0.
+\end{cases}
+\end{equation}
+где 
+$$
+\sigma \{ H, V \} = H \frac {|V| - V}{2 |V|} + H^{(-1)} \frac{|V|+V}{2|V|} = 
+\begin{cases}
+H,\ \ &\text{если}\  V < 0,
+\\
+H^{(-1)},\ \ &\text{если}\  V \ge 0.
+\end{cases}
+$$
+где $H^{(-1)} = H_{m-1}^n$
+
+Определим $H_m^n = H_n(x_m)$ - значение плотности в точке $x_m$ на временном шаге n;
+Распишем первое уравнение для произвольного временного шага n и точки $x_m$:
+\begin{equation}
+\begin{gathered}
+\frac{H_m^{n+1} - H_m^n}{\tau} + \\
++ \frac {(V_{m+1}^n - |V_{m+1}^n|) H_{m+1}^{n+1} + (V_{m+1}^n + |V_{m+1}^n| - V_m^n + |V_m^n|)H_m^{n+1} - (V_m^n + |V_m^n|)H_{m-1}^{n+1}}{2h} = 0,\\
+0 \le m < M ,\ n \ge 0.
+\end{gathered}
+\end{equation}
+
+Это система из $M$ уравнений с $M$ неизвестными $H_m^{n+1},\ m = 0,\ldots,M-1$. 
+Следовательно, можно решить эту систему и найти $H_m^{n+1},\ m = 0,\ldots,M-1$.
+
+Составим матрицу $A$ $M\times M$ для решения этой системы, она трехдиагональная:
+
+\begin{equation}
+\begin{cases}
+a_{m,m-1} = \Coef (H_{m-1}^{n+1}) = - \frac {V_m^n + |V_m^n|}{2h},\ m = 1,\ldots,M\\
+a_{m,m} = \Coef (H_{m}^{n+1}) = \frac{1}{\tau} + \frac{V_{m+1}^n + |V_{m+1}^n| - V_m^n + |V_m^n|}{2h},\ m = 0,\ldots, M\\
+a_{m,m+1} = \Coef (H_{m+1}^{n+1}) = \frac {V_{m+1}^n - |V_{m+1}^n|} {2h},\ m = 0,\ldots, M-1\\
+b_m = \frac{H_m^n}{\tau},\ m = 0,\ldots,M 
+\end{cases}
+\end{equation}
+Где $\Coef (H_m^n)$ это коэффициент при $H_m^n$ в уравнении. 
+
+Теперь распишем второе уравнение для произвольного временного шага n и точки $x_m$:
+
+\begin{equation}
+\begin{gathered}
+\frac{(H_{m-1}^{n+1} + H_m^{n+1}) V_m^{n+1} - (H_{m-1}^n + H_m^n)V_m^n}{2\tau}-\\
+- \frac{((|V_{m-1}^n|+V_{m-1}^n)H_{m-2}^{n+1} + (|V_{m}^n| +V_m^n)H_{m-1}^{n+1})V_{m-1}^{n+1}}{4h} +\\
++ \frac {((|V_{m-1}^n| - V_{m-1}^n +|V_m^n| + V_m^n)H_{m-1}^{n+1} + (|V_{m+1}^n| + V_{m+1}^n + |V_m^n| - V_m^n)H_m^{n+1})V_m^{n+1}}{4h} -\\
+- \frac {((|V_m^n| - V_m^n)H_m^{n+1} + (|V_{m+1}^n| - V_{m+1}^n)H_{m+1}^{n+1})V_{m+1}^{n+1}}{4h}+\\
++ \frac{\gamma}{\gamma - 1} \frac {H_m^{n+1} + H_{m-1}^{n+1}}{2} \frac {(H_m^{n+1})^{\gamma - 1} - (H_{m-1}^{n+1})^{\gamma - 1}}{h} = \\
+= \mu \frac {V_{m-1}^{n+1} - 2 V_m^{n+1} + V_{m+1}^{n+1}}{h^2} + \frac {H_{m-1}^{n+1} + H_m^{n+1}}{2}f_m^{n+1},\\
+\text{при}\ H_{m-1}^{n+1} + H_{m}^{n+1} \ne 0,\\
+V_m^{n+1} = 0,\ \text{при}\ H_{m-1}^{n+1} + H_m^{n+1} = 0,\\
+0 < m < M, n \ge 0,\\
+V_0^{n+1} = V_M^{n+1} = 0.
+\end{gathered}
+\end{equation}
+
+Это система из $M - 1$ уравнений и $M - 1$ неизвестной $V_m^{n+1},\ m = 1,\ldots,M-1$, так как мы знаем $V_0^{n+1} = 0, \text{ и } V_M^{n+1} = 0$.
+
+Составим матрицу A $(M-1)\times (M-1)$ для решения этой системы, она трехдиагональная:
+
+Если $ H_{m-1}^{n+1} + H_{m}^{n+1} \ne 0$, то
+\begin{equation}
+\begin{cases}
+a_{m,m-1} = \Coef (V_{m-1}^{n+1}) = - \frac {(|V_{m-1}^n|+V_{m-1}^n)H_{m-2}^{n+1} + (|V_{m}^n| +V_m^n)H_{m-1}^{n+1}}{4h} - \frac {\mu} {h^2},\\
+a_{m,m} = \Coef (V_{m}^{n+1}) = \frac{H_{m-1}^{n+1} + H_m^{n+1}}{2\tau} + \frac{(|V_{m-1}^n| - V_{m-1}^n +|V_m^n| + V_m^n)H_{m-1}^{n+1} + (|V_{m+1}^n| + V_{m+1}^n + |V_m^n| - V_m^n)H_m^{n+1}}{4h} + \frac {2\mu}{h^2},\\
+a_{m,m+1} = \Coef (V_{m+1}^{n+1}) = \frac {(|V_m^n| - V_m^n)H_m^{n+1} + (|V_{m+1}^n| - V_{m+1}^n)H_{m+1}^{n+1}} {4h} - \frac {\mu} {h^2},\\
+b_m = \frac{(H_{m-1}^n + H_m^n)V_m^n}{2\tau} - \frac{\gamma}{\gamma - 1} \frac {H_m^{n+1} + H_{m-1}^{n+1}}{2} \frac {(H_m^{n+1})^{\gamma - 1} - (H_{m-1}^{n+1})^{\gamma - 1}}{h} + \frac {H_{m-1}^{n+1} + H_m^{n+1}}{2}f_m^{n+1}, 
+\end{cases}
+\end{equation}
+Если $ H_{m-1}^{n+1} + H_{m}^{n+1} = 0$, то
+\begin{equation}
+\begin{cases}
+a_{m,m-1} = \Coef (V_{m-1}^{n+1}) = 0,\\
+a_{m,m} = \Coef (V_{m}^{n+1}) = 1,\\
+a_{m,m+1} = \Coef (V_{m+1}^{n+1}) = 0,\\
+b_m = 0, 
+\end{cases}
+\end{equation}
+
+\section{Решение}
+На каждой итерации решается 2 системы линейных уравнений: сначала для H, атем для V.
+Они решаются методом прогонки.
+
+\section{Проверка невязки}
+Рассмотрим функции для проверки невязки :
+\begin{equation}
+\begin{cases}
+\rho = e^t (x+1)
+\\
+u = x (x - 1)
+\end{cases}
+\end{equation}
+На отрезке по пространству и по времени $[0,1]$, вязкость $\mu = 0.01$.
+
+Построим новую систему дифференциальных уравнений, для которой эти функции будут являться решением, и сравним с ними решение, полученное программой.
+
+\begin{equation}
+\label{eq:111}
+\begin{cases}
+\frac {\partial \rho} {\partial t} + \frac{\partial \rho u} {\partial x} = f_0 
+\\
+\frac {\partial \rho u} {\partial t} + \frac {\partial \rho u^2} {\partial x} + \frac {\partial p} {\partial x} = \mu \frac {\partial^2 u} {\partial x^2} + \rho f + f_1,
+\end{cases}
+\end{equation}
+Где
+\begin{equation}
+\begin{cases}
+f_0 = e^t (x+1) + e^t (3 x ^2 - 1),
+\\
+f_1 = e^t x (x^2 - 1) + e^t (2 x (x ^2-1) (x - 1) + 2 x^3 (x - 1) + x^2 (x^2-1)) + \gamma e^t (e^t (x+1))^{\gamma - 1} - \mu
+\end{cases}
+\end{equation}
+
+В каждой ячейке значения 3-х невязок : 
+первая - $L_{2,h}$,
+вторая - $C_h$,
+третья - $\|x\|_2$.
+
+Таблица невязок для H:
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\tau \textbackslash h & 0.1 & 0.01 & 0.0001 & 0.00001 &
+\hline
+         & 1.715046e-01 & 2.438564e+00 & 5.005354e+00 & 9.664192e+00 &
+0.1      & 2.853975e-01 & 1.068528e+01 & 1.117180e+02 & 7.698708e+02 &
+         & 4.487259e-01 & 2.371597e+01 & 1.581367e+02 & 9.578208e+02 &
+\hline
+         & 1.971254e-02 & 1.646628e-02 & 1.662962e-02 & 1.664992e-02 &
+0.01     & 3.266910e-02 & 3.160195e-02 & 3.167248e-02 & 3.168116e-02 &
+         & 5.116027e-02 & 1.608697e-01 & 5.246955e-01 & 1.664620e+00 &
+\hline
+         & 9.138907e-03 & 1.488073e-03 & 1.637004e-03 & 1.667097e-03 &
+0.0001   & 1.483328e-02 & 3.326893e-03 & 3.192647e-03 & 3.180749e-03 &
+         & 2.785230e-02 & 1.438916e-02 & 5.164376e-02 & 1.666722e-01 &
+\hline
+         & 8.998438e-03 & 6.319611e-04 & 1.437646e-04 & 1.636009e-04 &
+0.000001 & 1.476457e-02 & 1.034910e-03 & 3.335590e-04 & 3.195915e-04 &
+         & 2.800643e-02 & 6.316172e-03 & 4.530117e-03 & 1.635619e-02 &
+\hline
+\end{tabular}
+\end{center}
+
+Таблица невязок для V:
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\tau \textbackslash h & 1 & 0.1 & 0.001 & 0.0001 &
+\hline
+       & 2.265398e-02 & 9.846926e-01 & 2.381708e+00 & 5.240725e+01 &
+1      & 3.161089e-02 & 3.708657e+00 & 1.613122e+01 & 3.108529e+02 &
+       & 3.203757e-02 & 1.392566e+00 & 3.368244e+00 & 7.411505e+01 &
+\hline
+       & 8.200595e-03 & 2.770304e-03 & 2.189140e-03 & 2.130651e-03 &
+0.1    & 1.145685e-02 & 3.947567e-03 & 3.151864e-03 & 3.072026e-03 &
+       & 1.159739e-02 & 3.917802e-03 & 3.095911e-03 & 3.013195e-03 &
+\hline
+       & 6.578740e-03 & 8.928189e-04 & 2.824992e-04 & 2.212076e-04 &
+0.001  & 9.205240e-03 & 1.249728e-03 & 4.035818e-04 & 3.193218e-04 &
+       & 9.303743e-03 & 1.262637e-03 & 3.995143e-04 & 3.128348e-04 &
+\hline
+       & 6.414909e-03 & 7.038132e-04 & 9.009657e-05 & 2.830514e-05 &
+0.0001 & 8.977915e-03 & 9.802615e-04 & 1.260776e-04 & 4.044741e-05 &
+       & 9.072052e-03 & 9.953422e-04 & 1.274158e-04 & 4.002951e-05 &
+\hline
+\end{tabular}
+\end{center}
+
+\section{Стабилизация}
+
+Рассмотрим изменение количества шагов до стабилизации в модели "скачок по плотности" при различной вязкости $\mu$.
+На отрезке по пространству $[0,10]$ с шагом $h$ и шагом по времени $\tau$ 
+
+$\mu = 0.1$
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\tau \textbackslash h & 0.1 & 0.01 & 0.0001 &
+\hline
+0.1    & 181.4 & 185.7 & 198.2 &
+\hline
+0.01   & 181.32 & 185.61 & 189.84 &
+\hline
+0.0001 & 181.305 & 185.593 & 189.882 &
+\hline
+\end{tabular}
+\end{center}
+
+$\mu = 0.01$
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\tau \textbackslash h & 0.1 & 0.01 & 0.0001 &
+\hline
+0.1    &  &  &  &
+\hline
+0.01   & 711.64 & 1043.20 & 1366.57 &
+\hline
+0.0001 &  &  &  &
+\hline
+\end{tabular}
+\end{center}
+
+
+Где $\infty$ оначает, что модель не сошлась за 1 000 000 итераций.
+Во всех случаях ошибка мат.баланса не привышала $1e-14$.
+Для проверки на сходимость испольовались условия: $L_{2,h}(V)<1e-2$ и $max(H) - min(H) < 1e-2$, где $H$ и $V$ - значения плотности и скорости на текущем шаге.
+
+\section{Масса}
+
+Рассмотрим отличие массы газа перед расчетом с массой газа после расчета в случае, как в предыдущем пункте.
+
+$\mu = 0.1$
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\tau \textbackslash h & 0.1 & 0.01 & 0.0001 &
+\hline
+0.1    & 5.329071e-15 & 3.552714e-15 & 1.421085e-14 &
+\hline
+0.01   & 1.598721e-14 & 2.131628e-14 & 2.309264e-14 &
+\hline
+0.0001 & 9.769963e-14 & 1.829648e-13 & 2.131628e-14 &
+\hline
+\end{tabular}
+\end{center}
+
+\section{Графики}
+Рассмотрим случай "скачек плотности" с параметрами: 
+$\mu$ = 0.1, $h$ = 0.1, $\tau$ = 0.1 , на отрезке [0,10]. 
+Далее преведены графики на некоторых шагах.
+
+\begin{figure}[h]
+\begin{center}
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./V1/V2}
+\caption{Скорость на 0 шаге.} %% подпись к рисунку
+\end{minipage}
+\hfill 
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./H1/H2}
+\caption{Плотность на 0 шаге.}
+\end{minipage}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./V2/V12}
+\caption{Скорость на 11 шаге.} %% подпись к рисунку
+\end{minipage}
+\hfill 
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./H2/H12}
+\caption{Плотность на 11 шаге.}
+\end{minipage}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./V2/V22}
+\caption{Скорость на 21 шаге.} %% подпись к рисунку
+\end{minipage}
+\hfill 
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./H2/H22}
+\caption{Плотность на 21 шаге.}
+\end{minipage}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./V2/V102}
+\caption{Скорость на 101 шаге.} %% подпись к рисунку
+\end{minipage}
+\hfill 
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./H2/H102}
+\caption{Плотность на 101 шаге.}
+\end{minipage}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./V2/V422}
+\caption{Скорость на 521 шаге.} %% подпись к рисунку
+\end{minipage}
+\hfill 
+\begin{minipage}[h]{0.4\linewidth}
+\includegraphics[width=1\linewidth]{./H2/H422}
+\caption{Плотность на 421 шаге.}
+\end{minipage}
+\end{center}
+\end{figure}
+
+
+\end{document}
