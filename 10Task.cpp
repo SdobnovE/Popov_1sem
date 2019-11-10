@@ -219,12 +219,19 @@ void solve10Task()
         V_n_1.push_back (u_0 (h * m, 0));
     }//Ok
 
+    // for (int i = 0; i < M + 1; i++)
+    //     printf("%e ", H_n_1[i]);
+    // printf("\n");
     
+    // for (int i = 0; i < M + 1; i++)
+    //     printf("%e ", V_n_1[i]);
+    // printf("\n");
 
     for (int i = 0; i < N; i++)
     {
         H_n.clear();
         V_n.clear();
+        //cout << H_n.size() << endl;
         for (auto i1 : H_n_1)
             H_n.push_back(i1);
 
@@ -241,21 +248,28 @@ void solve10Task()
         
         mat._up.push_back (V_n[1] / (2 * h)); 
 
-        b.push_back(
-            - H_n[0] * V_n[1] / (2.0 * h)
-            + (1 / (2.0 * h)) * (
-                                    H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]
-                                    - 0.5 * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1])
-                                    + H_n[0]*(
-                                                V_n[2] - 2 * V_n[1] + V_n[0] 
-                                                - 0.5 * (V_n[3] - 2 * V_n[2] + V_n[1])
-                                             )
-                                )
-            + H_n[0] / t
-            + f0(i, 0));
+        b.push_back(-H_n[0]*V_n[1]/(2.0*h)+(1/(2.0*h))*(H_n[2]*V_n[2]
+                -2*H_n[1]*V_n[1]+H_n[0]*V_n[0]
+                -0.5*(H_n[3]*V_n[3]-2*H_n[2]*V_n[2]+H_n[1]*V_n[1])
+                +H_n[0]*(V_n[2]-2*V_n[1]+V_n[0]-0.5*(V_n[3]-2*V_n[2]+V_n[1])))+
+                H_n[0]/t+f0(i,0));
 
 
-        
+        // b.push_back(
+        //             H_n[0] / t
+        //             - H_n[0] * (V_n[1] - V_n[0]) / (2 * h)
+        //             - 1/2. * h * (
+        //                                 (H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]) / (h * h)
+        //                                 - 1/2. * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1]) / (h * h)
+        //                                 + H_n[0] * (
+        //                                                 (V_n[2] - 2 * V_n[1] + V_n[0]) / (h * h)
+        //                                                 - 1/2. * (V_n[3] - 2 * V_n[2] + V_n[1]) / (h * h)
+        //                                            )
+        //                            )
+        //             + f0(i, 0)
+
+        //  );//Почему не делить на h*h
+         //printf ("F0  %e %e %e\n", i * t, 0 * h, f0(i,0));
 
         for (int m = 1; m < M; m++)////Сто проц верный цикл
         {
@@ -277,6 +291,7 @@ void solve10Task()
                         - H_n[m] * (V_n[m + 1] - V_n[m - 1]) / (4 * h)
                         + f0(i, m)
             );
+            //printf ("\t%e\n", f0(i, m));
         }
 
         mat._main.push_back(
@@ -301,16 +316,84 @@ void solve10Task()
                                )
                     + f0(i, M)
         );
+        //
         
 
+        // for (auto i : b)
+        //     printf("%e ", i);
+        // printf("\n");
+
         mat.three_diag_meth(b, H_n_1);//Посчитали значение H на n+1 слое
-        
+        // // cout << "res " << mat.residual(b, H_n_1) << endl;
+        // mat.print();
+        // for (auto i : b)
+        //     printf("b %e ", i);
+        // printf("\n");printf("\n");
+
+        // for (auto i : H_n_1)
+        //     printf("ans %e ", i);
+        // printf("\n");
+
+        //mat.print();
         mat._main.clear();
         mat._up.clear();
         mat._down.clear();
         b.clear();
 
-        
+        // mat._main.push_back(1);
+        // mat._up.push_back(0);
+        // b.push_back(0);
+
+        // for (int m = 1; m < M; m++)
+        // {
+        //     mat._main.push_back (
+        //                          H_n_1[m] / t
+        //                          + 2 * Mu / (h * h)
+        //     );
+
+        //     mat._down.push_back (
+        //                          -Mu / (h * h)
+        //                          - H_n_1[m - 1] * V_n[m - 1] / (3 * h)
+        //                          - H_n_1[m] * V_n[m] / (3 * h)
+        //     );
+
+        //     mat._up.push_back(
+        //                        -Mu / (h * h)
+        //                        + H_n_1[m + 1] * V_n[m + 1] / (3 * h)
+        //                        + H_n_1[m] * V_n[m] / (3 * h)
+        //     );
+
+        //     b.push_back(
+        //                 H_n_1[m] * f(h * m, t * (i))
+        //                 + H_n[m] * V_n[m] / t
+        //                 - 1/3. * V_n[m] * V_n[m] * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
+        //                 -  C * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
+        //     );
+        // }
+
+        /*
+        double Max = Mu / H_n_1[0];
+        for (int m = 1; m < M; m++)
+        {
+            if( Max < Mu / H_n_1[m])
+                Max = Mu / H_n_1[m];
+        }
+        for (int m = 1; m < M; m++)
+        {
+            mat._main.push_back(1. / t + 2 * Max / (h * h));
+
+            mat._down.push_back(-(V_n[m]+V_n[m-1])/(6*h)-Max/(h*h));
+
+            mat._up.push_back((V_n[m]+V_n[m+1])/(6*h)-Max/(h*h));
+
+            b.push_back(V_n[m]/t-(C*(H_n_1[m+1])- C*(H_n_1[m-1]))/(2.*h*H_n_1[m])-(Max-Mu/H_n_1[m])*(V_n[m+1]-2*V_n[m]+V_n[m-1])/(h*h)+f(m, i));
+        }
+
+        mat._down.push_back(0);
+        mat._main.push_back(1);
+        b.push_back(0);
+        //mat.print();
+        */
 
        double mm = 1. / H_n_1[0];
         
@@ -358,7 +441,7 @@ void solve10Task()
         mat._down.push_back(0);
         mat._main.push_back(1);
         b.push_back(0);
-
+        
         mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое    
         count_residual(H_n_1, V_n_1, i);//Посчитали невязку
         
