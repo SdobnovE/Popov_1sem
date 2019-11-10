@@ -132,37 +132,12 @@ double f0 (int i, int j)
                  M_PI * x / 50. * cos(M_PI * x * x / 100.) * (cos(M_PI * x / 10.) + 1.5)
             );
     return res;
-    // return exp(i*t)*(cos(M_PI*j*h/10.)+1.5)+
-    //         exp(i*t)*cos(2.*M_PI*i*t)*(-M_PI*sin(M_PI*h*j/10.)*sin(M_PI*h*h*j*j/100.)/10.+
-    // (M_PI*j*h/50.)*cos(M_PI*h*j*h*j/100.)*(cos(M_PI*h*j/10.)+1.5));
 }
 
 
 double f (int i, int j)
 {
-    // double x = j * h;
-    // double Ro = exp(t * i) * (cos (M_PI * x / 10.) + 1.5);//+
-
-    // double u = cos(2 * M_PI * t * i) * sin (M_PI * x * x / 100);//+
-
-    // double du_dt = sin(M_PI * x * x / 100.) * (-2 * M_PI * sin(2 * M_PI * t * i));//+
-
-    // double du_dx = cos(2 * M_PI * t * i) * cos(M_PI * x * x / 100.) * 2 * M_PI * x / 100.;//+
-
-    // double dRo_dx = exp(t * i) * (-M_PI / 10. * sin(M_PI * x / 10.));//+
-
-    // double d2u_dx2 = -M_PI * cos(2 * M_PI * t * i) / 2500.;//+
     
-    // d2u_dx2 *= M_PI * x * x * sin(M_PI * x * x / 100.)
-    //            - 50 * cos(M_PI * x * x / 100);//+
-    
-    
-    // double res = Ro * du_dt 
-    //             + Ro * u * du_dx 
-    //             + dRo_dx
-    //             - Mu * d2u_dx2;//+
-    // res /= Ro;
-    // return res;
     return (-exp(i*t)*(cos(M_PI*h*j/10.)+1.5)*2.*M_PI*sin(2.*M_PI*i*t)*sin(M_PI*j*j*h*h/100.)+
     exp(i*t)*(cos(M_PI*j*h/10.)+1.5)*sin(M_PI*j*j*h*h/100.)*cos(2.*M_PI*i*t)*cos(2.*M_PI*i*t)*(M_PI*h*j/50.)*cos(M_PI*j*j*h*h/100.)-
     C*(M_PI/10.)*exp(i*t)*sin(M_PI*h*j/10.)-
@@ -376,14 +351,6 @@ int main()
     vector<double> a;
     printf ("%e\n", count_residual(a, b, -1));
 
-    // Matrix A(5);
-    // A._main = {1,1,1,1,1};
-    // A._up = {-2,4,-2,-2};
-    // A._down = {2,2,2,2};
-    // vector<double> b, x;
-    // b = {1,1,1,1,1};
-    // A.three_diag_meth(b, x);
-    // cout <<A.residual(b, x) << endl;
     
     
     return 0;
