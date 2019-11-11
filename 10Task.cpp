@@ -6,11 +6,11 @@
 using namespace std;
 
 const double Mu = 0.01;
-const double C = 10;
+const double C = 0.0;
 const double X = 10;
 const double T = 1;
-const int N = 1000;//по t
-const int M = 1000;// по x
+const int N = 100000;//по t
+const int M = 100000;// по x
 const double t = T / N;
 const double h = X / M; 
 const double EPS = 1e-16;
@@ -132,40 +132,37 @@ double f0 (int i, int j)
                  M_PI * x / 50. * cos(M_PI * x * x / 100.) * (cos(M_PI * x / 10.) + 1.5)
             );
     return res;
-    // return exp(i*t)*(cos(M_PI*j*h/10.)+1.5)+
-    //         exp(i*t)*cos(2.*M_PI*i*t)*(-M_PI*sin(M_PI*h*j/10.)*sin(M_PI*h*h*j*j/100.)/10.+
-    // (M_PI*j*h/50.)*cos(M_PI*h*j*h*j/100.)*(cos(M_PI*h*j/10.)+1.5));
 }
 
 
 double f (int i, int j)
 {
-    // double Ro = exp(t) * (cos (M_PI * x / 10.) + 1.5);//+
-
-    // double u = cos(2 * M_PI * t) * sin (M_PI * x * x / 100);//+
-
-    // double du_dt = sin(M_PI * x * x / 100.) * (-2 * M_PI * sin(2 * M_PI * t));//+
-
-    // double du_dx = cos(2 * M_PI * t) * cos(M_PI * x * x / 100.) * 2 * M_PI * x / 100.;//+
-
-    // double dRo_dx = exp(t) * (-M_PI / 10. * sin(M_PI * x / 10.));//+
-
-    // double d2u_dx2 = -M_PI * cos(2 * M_PI * t) / 2500.;//+
     
-    // d2u_dx2 *= M_PI * x * x * sin(M_PI * x * x / 100.)
-    //            - 50 * cos(M_PI * x * x / 100);//+
-    
-    
-    // double res = Ro * du_dt 
-    //             + Ro * u * du_dx 
-    //             + dRo_dx
-    //             - Mu * d2u_dx2;//+
-    // res /= Ro;
-    // return res;
-    return (-exp(i*t)*(cos(M_PI*h*j/10.)+1.5)*2.*M_PI*sin(2.*M_PI*i*t)*sin(M_PI*j*j*h*h/100.)+
-    exp(i*t)*(cos(M_PI*j*h/10.)+1.5)*sin(M_PI*j*j*h*h/100.)*cos(2.*M_PI*i*t)*cos(2.*M_PI*i*t)*(M_PI*h*j/50.)*cos(M_PI*j*j*h*h/100.)-
-    C*(M_PI/10.)*exp(i*t)*sin(M_PI*h*j/10.)-
-    Mu*cos(2.*M_PI*i*t)*((M_PI/50.)*cos(M_PI*j*h*j*h/100.)-(M_PI*M_PI*j*j*h*h/2500)*sin(M_PI*j*h*j*h/100.)))/(exp(i*t)*(cos(M_PI*j*h/10.)+1.5));
+    return (
+        -exp(i * t) 
+            * (cos(M_PI * h * j / 10.) + 1.5) 
+            * 2. * M_PI * sin(2. * M_PI * i * t) 
+            * sin(M_PI * j * j * h * h / 100.)
+        + exp(i * t) 
+            * (cos(M_PI * j * h / 10.) + 1.5) 
+            * sin(M_PI * j * j * h * h / 100.) 
+            * cos(2. * M_PI * i * t) 
+            * cos(2. * M_PI * i * t) 
+            * (M_PI * h  * j / 50.) 
+            * cos(M_PI * j * j * h * h / 100.)
+        - C * (M_PI / 10.) 
+            * exp(i * t)
+            * sin(M_PI * h * j / 10.)
+        - Mu * cos(2. * M_PI * i * t)
+            * (
+                (M_PI / 50.) * cos(M_PI * j * h * j * h / 100.)
+                - (M_PI *M_PI * j * j * h * h / 2500)
+                    * sin(M_PI * j * h * j * h / 100.)
+               )
+            ) / (
+                    exp(i * t) 
+                    * (cos(M_PI * j * h / 10.) + 1.5)
+                );
 
 }
 
@@ -186,20 +183,23 @@ double count_residual(vector<double> H, vector<double> V, int num_sloy)
     static double resid = 0.0;
     if (num_sloy < 0)
         return resid;
+    static int tt = 0;
     
     for (int i = 0; i < N + 1; i++)
     {
         if (fabs (Ro_0(h * i, t * num_sloy) - H[i]) > resid)
             resid = fabs (Ro_0(h * i, t * num_sloy) - H[i]);
     }
-
+    if (tt < 10)
+        printf ("RESID1 %e\n", resid);
     for (int i = 0; i < M + 1; i++)
     {
         if (fabs (u_0 (h * i, t * num_sloy) - V[i]) > resid)
             resid = fabs (u_0 (h * i, t * num_sloy) - V[i]);
     }
-
-    
+    if (tt < 10)
+        printf ("RESID2 %e\n", resid);
+    tt++;
     return resid;
 }
 
@@ -220,11 +220,10 @@ void solve10Task()
 
     
 
-    for (int i = 0; i < N; i++)
+    for (int i = 1; i < N + 1; i++)
     {
         H_n.clear();
         V_n.clear();
-        //cout << H_n.size() << endl;
         for (auto i1 : H_n_1)
             H_n.push_back(i1);
 
@@ -241,11 +240,20 @@ void solve10Task()
         
         mat._up.push_back (V_n[1] / (2 * h)); 
 
-        b.push_back(-H_n[0]*V_n[1]/(2.0*h)+(1/(2.0*h))*(H_n[2]*V_n[2]
-                -2*H_n[1]*V_n[1]+H_n[0]*V_n[0]
-                -0.5*(H_n[3]*V_n[3]-2*H_n[2]*V_n[2]+H_n[1]*V_n[1])
-                +H_n[0]*(V_n[2]-2*V_n[1]+V_n[0]-0.5*(V_n[3]-2*V_n[2]+V_n[1])))+
-                H_n[0]/t+f0(i,0));
+        b.push_back(
+                    H_n[0] / t
+                    - H_n[0] * (V_n[1] - V_n[0]) / (2.0 * h)
+                    + (1 / (2.0 * h)) * (
+                                            H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]
+                                            - 0.5 * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1])
+                                            + H_n[0] * (
+                                                        V_n[2] - 2 * V_n[1] + V_n[0] 
+                                                        - 0.5 * (V_n[3] - 2 * V_n[2] + V_n[1])
+                                                    )
+                                        )
+                    
+                    + f0(i, 0)
+        );
 
 
         
@@ -270,16 +278,15 @@ void solve10Task()
                         - H_n[m] * (V_n[m + 1] - V_n[m - 1]) / (4 * h)
                         + f0(i, m)
             );
-            //printf ("\t%e\n", f0(i, m));
         }
 
         mat._main.push_back(
                             1 / t
-                            + V_n[M] / (2 * h)
+                            + V_n[M] / (2. * h)
         );
 
         mat._down.push_back(
-                  -V_n[M - 1] / (2 * h)
+                  -V_n[M - 1] / (2. * h)
         );//Возможно минус
 
         b.push_back(
@@ -296,8 +303,9 @@ void solve10Task()
                     + f0(i, M)
         );
         
+
         mat.three_diag_meth(b, H_n_1);//Посчитали значение H на n+1 слое
-        
+        //printf("res %e\n", mat.residual(b, H_n_1));
         mat._main.clear();
         mat._up.clear();
         mat._down.clear();
@@ -307,7 +315,7 @@ void solve10Task()
         mat._up.push_back(0);
         b.push_back(0);
 
-        for (int m = 1; m < M; m++)
+       for (int m = 1; m < M; m++)
         {
             mat._main.push_back (
                                  H_n_1[m] / t
@@ -329,45 +337,20 @@ void solve10Task()
             b.push_back(
                         H_n_1[m] * f(i, m)
                         + H_n[m] * V_n[m] / t
-                        - 1/3. * V_n[m] * V_n[m] * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
-                        -  C * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
+                        - (1/3. * V_n[m] * V_n[m] + C) * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
+                        
             );
         }
-
-       
-
-    
 
         
 
         mat._down.push_back(0);
         mat._main.push_back(1);
         b.push_back(0);
+
         mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое    
-        
-        
-        // mat.print();
-        // for (auto i : b)
-        //     printf("b %e ", i);
-        // printf("\n");
-
-        // for (auto i : V_n_1)
-        //     printf("ans %e ", i);
-        // printf("\n");printf("\n");
-
-
-
-        
-        //cout << "VALUES: " << V_n_1[0] << " " << V_n_1[N] << endl;
-        cout << "res " << mat.residual(b, V_n_1) << endl;
-        // cout << b.size() << endl;
-        count_residual(H_n_1, V_n_1, i);
-        // for (auto i : H_n_1)
-        //     printf("ans %e ", i);
-        // printf("\n");
-        // for (auto i : V_n_1)
-        //     printf("ans %e ", i);
-        // printf("\n");printf("\n");
+        count_residual(H_n_1, V_n_1, i);//Посчитали невязку
+        //printf("res %e\n", mat.residual(b, V_n_1));
         
     }
     
@@ -382,14 +365,6 @@ int main()
     vector<double> a;
     printf ("%e\n", count_residual(a, b, -1));
 
-    // Matrix A(5);
-    // A._main = {1,1,1,1,1};
-    // A._up = {-2,4,-2,-2};
-    // A._down = {2,2,2,2};
-    // vector<double> b, x;
-    // b = {1,1,1,1,1};
-    // A.three_diag_meth(b, x);
-    // cout <<A.residual(b, x) << endl;
     
     
     return 0;

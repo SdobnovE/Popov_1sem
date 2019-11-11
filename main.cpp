@@ -9,8 +9,8 @@ const double Mu = 0.01;
 const double C = 10;
 const double X = 10;
 const double T = 1;
-const int N = 5000;//по t
-const int M = 5000;// по x
+const int N = 4000;//по t
+const int M = 4000;// по x
 const double t = T / N;
 const double h = X / M; 
 const double EPS = 1e-16;
@@ -138,10 +138,31 @@ double f0 (int i, int j)
 double f (int i, int j)
 {
     
-    return (-exp(i*t)*(cos(M_PI*h*j/10.)+1.5)*2.*M_PI*sin(2.*M_PI*i*t)*sin(M_PI*j*j*h*h/100.)+
-    exp(i*t)*(cos(M_PI*j*h/10.)+1.5)*sin(M_PI*j*j*h*h/100.)*cos(2.*M_PI*i*t)*cos(2.*M_PI*i*t)*(M_PI*h*j/50.)*cos(M_PI*j*j*h*h/100.)-
-    C*(M_PI/10.)*exp(i*t)*sin(M_PI*h*j/10.)-
-    Mu*cos(2.*M_PI*i*t)*((M_PI/50.)*cos(M_PI*j*h*j*h/100.)-(M_PI*M_PI*j*j*h*h/2500)*sin(M_PI*j*h*j*h/100.)))/(exp(i*t)*(cos(M_PI*j*h/10.)+1.5));
+    return (
+        -exp(i * t) 
+            * (cos(M_PI * h * j / 10.) + 1.5) 
+            * 2. * M_PI * sin(2. * M_PI * i * t) 
+            * sin(M_PI * j * j * h * h / 100.)
+        + exp(i * t) 
+            * (cos(M_PI * j * h / 10.) + 1.5) 
+            * sin(M_PI * j * j * h * h / 100.) 
+            * cos(2. * M_PI * i * t) 
+            * cos(2. * M_PI * i * t) 
+            * (M_PI * h  * j / 50.) 
+            * cos(M_PI * j * j * h * h / 100.)
+        - C * (M_PI / 10.) 
+            * exp(i * t)
+            * sin(M_PI * h * j / 10.)
+        - Mu * cos(2. * M_PI * i * t)
+            * (
+                (M_PI / 50.) * cos(M_PI * j * h * j * h / 100.)
+                - (M_PI *M_PI * j * j * h * h / 2500)
+                    * sin(M_PI * j * h * j * h / 100.)
+               )
+            ) / (
+                    exp(i * t) 
+                    * (cos(M_PI * j * h / 10.) + 1.5)
+                );
 
 }
 
@@ -196,7 +217,7 @@ void solve10Task()
 
     
 
-    for (int i = 0; i < N; i++)
+    for (int i = 1; i < N + 1; i++)
     {
         H_n.clear();
         V_n.clear();
@@ -217,17 +238,19 @@ void solve10Task()
         mat._up.push_back (V_n[1] / (2 * h)); 
 
         b.push_back(
-            - H_n[0] * V_n[1] / (2.0 * h)
-            + (1 / (2.0 * h)) * (
-                                    H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]
-                                    - 0.5 * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1])
-                                    + H_n[0]*(
-                                                V_n[2] - 2 * V_n[1] + V_n[0] 
-                                                - 0.5 * (V_n[3] - 2 * V_n[2] + V_n[1])
-                                             )
-                                )
-            + H_n[0] / t
-            + f0(i, 0));
+                    H_n[0] / t
+                    - H_n[0] * (V_n[1] - V_n[0]) / (2.0 * h)
+                    + (1 / (2.0 * h)) * (
+                                            H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]
+                                            - 0.5 * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1])
+                                            + H_n[0] * (
+                                                        V_n[2] - 2 * V_n[1] + V_n[0] 
+                                                        - 0.5 * (V_n[3] - 2 * V_n[2] + V_n[1])
+                                                    )
+                                        )
+                    
+                    + f0(i, 0)
+        );
 
 
         
@@ -256,11 +279,11 @@ void solve10Task()
 
         mat._main.push_back(
                             1 / t
-                            + V_n[M] / (2 * h)
+                            + V_n[M] / (2. * h)
         );
 
         mat._down.push_back(
-                  -V_n[M - 1] / (2 * h)
+                  -V_n[M - 1] / (2. * h)
         );//Возможно минус
 
         b.push_back(
@@ -302,7 +325,7 @@ void solve10Task()
         mat._up.push_back(0);
         b.push_back(0);
 
-        for (int j = 1;j < M; j++)
+        for (int j = 1; j < M; j++)
         {
             mat._down.push_back(
                 -(V_n[j] + V_n[j - 1]) / (6 * h)
