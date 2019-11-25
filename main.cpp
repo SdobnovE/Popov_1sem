@@ -9,8 +9,8 @@ const double Mu = 0.01;
 const double C = 10;
 const double X = 10;
 const double T = 1;
-const int N = 4000;//по t
-const int M = 4000;// по x
+const int N = 6000;//по t
+const int M = 6000;// по x
 const double t = T / N;
 const double h = X / M; 
 const double EPS = 1e-16;
@@ -186,6 +186,7 @@ double count_residual(vector<double> H, vector<double> V, int num_sloy)
     
     for (int i = 0; i < N + 1; i++)
     {
+        
         if (fabs (Ro_0(h * i, t * num_sloy) - H[i]) > resid)
             resid = fabs (Ro_0(h * i, t * num_sloy) - H[i]);
     }
@@ -358,7 +359,16 @@ void solve10Task()
         b.push_back(0);
 
         mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое    
-        count_residual(H_n_1, V_n_1, i);//Посчитали невязку
+        count_residual(H_n_1, V_n_1, i+1);//Посчитали невязку
+        // printf("H:\n");
+        // for (int j = 0; j < M; j++)
+        //     printf("%e  ", H_n_1[j] - Ro_0(j*h, (i+1) * t));
+        // printf("\n");
+        
+        // printf("V:\n");
+        // for (int j = 0; j < M; j++)
+        //     printf("%e  ", V_n_1[j] - u_0(j * h, (i+1) * t));
+        // printf("\n");
         
         
     }

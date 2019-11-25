@@ -6,11 +6,11 @@
 using namespace std;
 
 const double Mu = 0.01;
-const double C = 0.0;
+const double C = 1.0;
 const double X = 10;
 const double T = 1;
-const int N = 100000;//по t
-const int M = 100000;// по x
+const int N = 400;//по t
+const int M = 400;// по x
 const double t = T / N;
 const double h = X / M; 
 const double EPS = 1e-16;
@@ -317,40 +317,44 @@ void solve10Task()
 
        for (int m = 1; m < M; m++)
         {
+            
+
             mat._main.push_back (
-                                 H_n_1[m] / t
-                                 + 2 * Mu / (h * h)
+                                 1 / t
+                                 + 2 * Mu / (h * h) / H_n_1[m]
             );
 
             mat._down.push_back (
-                                 -Mu / (h * h)
-                                 - H_n_1[m - 1] * V_n[m - 1] / (3 * h)
-                                 - H_n_1[m] * V_n[m] / (3 * h)
+                                 -Mu / (h * h) / H_n_1[m]
+                                 - V_n[m - 1] / (6 * h)
+                                 - V_n[m] / (6 * h)
             );
 
             mat._up.push_back(
-                               -Mu / (h * h)
-                               + H_n_1[m + 1] * V_n[m + 1] / (3 * h)
-                               + H_n_1[m] * V_n[m] / (3 * h)
+                               -Mu / (h * h) / H_n_1[m]
+                               + V_n[m + 1] / (6 * h)
+                               + V_n[m] / (6 * h)
             );
 
             b.push_back(
-                        H_n_1[m] * f(i, m)
-                        + H_n[m] * V_n[m] / t
-                        - (1/3. * V_n[m] * V_n[m] + C) * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h)
+                        f(i, m)
+                        + V_n[m] / t
+                        - C * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h) / H_n_1[m]
                         
             );
+
         }
 
-        
+
 
         mat._down.push_back(0);
         mat._main.push_back(1);
         b.push_back(0);
 
         mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое    
+        
         count_residual(H_n_1, V_n_1, i);//Посчитали невязку
-        //printf("res %e\n", mat.residual(b, V_n_1));
+        
         
     }
     
