@@ -3,23 +3,26 @@
 #include<iostream>
 #include<vector>
 #include <algorithm>
+#include <utility>
 using namespace std;
-
-const double Mu = 0.01;
-const double C = 1.0;
+typedef  pair<double, double> residual;
+residual final_residual;
+double Mu = 0.01;
+double C = 1.0;
 const double X = 10;
 const double T = 1;
-const int N = 400;//по t
-const int M = 400;// по x
-const double t = T / N;
-const double h = X / M; 
+string norm;
+int N = 400;//по t
+int M = 400;// по x
+double t = T / N;
+double h = X / M; 
 const double EPS = 1e-16;
 
 double f0 (double x, double t);
 double f (double x, double t);
 double Ro_0 (double x, double t);
 double u_0(double x, double t);
-double count_residual(vector<double> H, vector<double> V, int num_sloy);
+residual count_residual(const vector<double>& H, const vector<double>& V);
 void solve10Task();
 
 
@@ -178,28 +181,104 @@ double u_0 (double x, double t)
     return u;
 }
 
-double count_residual(vector<double> H, vector<double> V, int num_sloy)
+residual count_residual(const vector<double>& H, const vector<double>& V)
 {
-    static double resid = 0.0;
-    if (num_sloy < 0)
-        return resid;
-    static int tt = 0;
+    residual resid;
+    resid.first = 0;
+    resid.second = 0;
     
-    for (int i = 0; i < N + 1; i++)
+   if (norm == "C")
     {
-        if (fabs (Ro_0(h * i, t * num_sloy) - H[i]) > resid)
-            resid = fabs (Ro_0(h * i, t * num_sloy) - H[i]);
+        for (int i = 0; i < M + 1; i++)
+        {
+            if (fabs (Ro_0(h * i, 1) - H[i]) > resid.first)
+                resid.first = fabs (Ro_0(h * i, 1) - H[i]);
+        }
+        
+        for (int i = 0; i < M + 1; i++)
+        {
+            if (fabs (u_0 (h * i, 1) - V[i]) > resid.second)
+                resid.second = fabs (u_0 (h * i, 1) - V[i]);
+        }
     }
-    if (tt < 10)
-        printf ("RESID1 %e\n", resid);
-    for (int i = 0; i < M + 1; i++)
+
+    if (norm == "L2")
     {
-        if (fabs (u_0 (h * i, t * num_sloy) - V[i]) > resid)
-            resid = fabs (u_0 (h * i, t * num_sloy) - V[i]);
+        double scal_V = 0.0;
+        double scal_H = 0.0;
+
+        
+
+
+        for (int i = 1; i < M; i++)//1...N
+            scal_H += (Ro_0(h * i, 1) - H[i]) * (Ro_0(h * i, 1) - H[i]);
+            
+        for (int i = 1; i < M; i++)//1...N
+            scal_V += (u_0 (h * i, 1) - V[i]) * (u_0 (h * i, 1) - V[i]);
+        
+        scal_H *= h;
+        scal_V *= h;
+        
+        scal_H += 0.5 * h * ((Ro_0(0, 1) - H[0]) * (Ro_0(0, 1) - H[0])
+                             + (Ro_0(h * M, 1) - H[M]) * (Ro_0(h * M, 1) - H[M])
+                            );
+        scal_V += 0.5 * h * ((u_0 (h * 0, 1) - V[0]) * (u_0 (h * 0, 1) - V[0])
+                             + (u_0 (h * M, 1) - V[M]) * (u_0 (h * M, 1) - V[M]));
+
+        resid.first = sqrt (scal_H);
+        resid.second = sqrt (scal_V);
     }
-    if (tt < 10)
-        printf ("RESID2 %e\n", resid);
-    tt++;
+
+    if (norm == "W")
+    {
+        double scal_V = 0.0;
+        double scal_H = 0.0;
+
+        
+
+
+        for (int i = 1; i < M; i++)//1...N
+            scal_H += (Ro_0(h * i, 1) - H[i]) * (Ro_0(h * i, 1) - H[i]); 
+            
+        for (int i = 1; i < M; i++)//1...N
+            scal_V += (u_0 (h * i, 1) - V[i]) * (u_0 (h * i, 1) - V[i]);
+        
+        scal_H *= h;
+        scal_V *= h;
+        
+        scal_H += 0.5 * h * ((Ro_0(0, 1) - H[0]) * (Ro_0(0, 1) - H[0])
+                             + (Ro_0(h * N, 1) - H[N]) * (Ro_0(h * N, 1) - H[N])
+                            );
+        scal_V += 0.5 * h * ((u_0 (h * 0, 1) - V[0]) * (u_0 (h * 0, 1) - V[0])
+                             + (u_0 (h * N, 1) - V[N]) * (u_0 (h * N, 1) - V[N]));
+
+        resid.first = scal_H;
+        resid.second = scal_V;
+        
+        double temp1 = 0.;
+        for (int i = 0; i < M; i++)
+        {
+            temp1 += (u_0 (h * (i), 1) - V[i] - u_0 (h * (i + 1), 1) + V[i + 1]) / h * 
+                     (u_0 (h * (i), 1) - V[i] - u_0 (h * (i + 1), 1) + V[i + 1]) / h;
+        }
+        temp1 *= h;
+
+        double temp2 = 0.;
+        for (int i = 0; i < M; i++)
+        {
+            temp2 += (Ro_0 (h * (i), 1) - H[i] + H[i + 1] - Ro_0 (h * (i + 1), 1)) / h * 
+                     (Ro_0 (h * (i), 1) - H[i] + H[i + 1] - Ro_0 (h * (i + 1), 1)) / h;
+        }
+        temp2 *= h;
+        resid.first = fabs (resid.first + temp2);
+        resid.second = fabs (resid.second + temp1);
+        
+
+
+    }
+
+    
+    
     return resid;
 }
 
@@ -353,21 +432,38 @@ void solve10Task()
 
         mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое    
         
-        count_residual(H_n_1, V_n_1, i);//Посчитали невязку
+        //count_residual(H_n_1, V_n_1, i);//Посчитали невязку
         
         
     }
+    final_residual = count_residual(H_n_1, V_n_1);
     
 }
 
 
-int main()
+int main(int argc, char* argv[])
 {
-     
+    if (argc != 6)
+    {
+        printf("USAGE: Mu, C, N_t, M_x, norm\n");
+        return -1;
+    }
+
+    sscanf(argv[1], "%lf", &Mu);
+    sscanf(argv[2], "%lf", &C);
+    sscanf(argv[3], "%d", &N);
+    //printf("argv[3] %s\n", argv[3]);
+    sscanf(argv[4], "%d", &M);
+    
+    norm = argv[5];
+    //printf("HA %f %f %d %d\n", Mu, C, N, M);
+    t = T / N;
+    h = X / M; 
+
     solve10Task();
     vector<double> b;
     vector<double> a;
-    printf ("%e\n", count_residual(a, b, -1));
+    printf ("%e %e\n", final_residual.first, final_residual.second);
 
     
     
