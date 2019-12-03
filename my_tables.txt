@@ -1,4 +1,6 @@
 Mu=0.1  C=1 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -12,8 +14,12 @@ Mu=0.1  C=1 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=1 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -27,8 +33,12 @@ Mu=0.1  C=1 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=1 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -42,8 +52,12 @@ Mu=0.01  C=1 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=1 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -57,8 +71,12 @@ Mu=0.01  C=1 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=1 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -72,8 +90,12 @@ Mu=0.001  C=1 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=1 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -87,8 +109,12 @@ Mu=0.001  C=1 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=10 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -102,8 +128,12 @@ Mu=0.1  C=10 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=10 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -117,8 +147,12 @@ Mu=0.1  C=10 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=10 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -132,8 +166,12 @@ Mu=0.01  C=10 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=10 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -147,8 +185,12 @@ Mu=0.01  C=10 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=10 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -162,8 +204,12 @@ Mu=0.001  C=10 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=10 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -177,8 +223,12 @@ Mu=0.001  C=10 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=100 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -192,8 +242,12 @@ Mu=0.1  C=100 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=100 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -207,8 +261,12 @@ Mu=0.1  C=100 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=100 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &          100   &         1000  &         10000 \\
@@ -222,8 +280,12 @@ Mu=0.01  C=100 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=100 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -237,8 +299,12 @@ Mu=0.01  C=100 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=100 L2 H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -252,8 +318,12 @@ Mu=0.001  C=100 L2 H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=100 L2 V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -267,8 +337,12 @@ Mu=0.001  C=100 L2 V:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=1 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -282,8 +356,12 @@ Mu=0.1  C=1 W H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=1 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -297,8 +375,12 @@ Mu=0.1  C=1 W V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=1 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -312,8 +394,12 @@ Mu=0.01  C=1 W H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=1 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -327,8 +413,12 @@ Mu=0.01  C=1 W V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=1 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &          100   &         1000  &         10000 \\
@@ -342,8 +432,12 @@ Mu=0.001  C=1 W H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=1 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -357,8 +451,12 @@ Mu=0.001  C=1 W V:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=10 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -372,8 +470,12 @@ Mu=0.1  C=10 W H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=10 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -387,8 +489,12 @@ Mu=0.1  C=10 W V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=10 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &          100   &         1000  &         10000 \\
@@ -402,8 +508,12 @@ Mu=0.01  C=10 W H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=10 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -417,8 +527,12 @@ Mu=0.01  C=10 W V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=10 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &          100   &         1000  &         10000 \\
@@ -432,8 +546,12 @@ Mu=0.001  C=10 W H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=10 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -447,8 +565,12 @@ Mu=0.001  C=10 W V:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=100 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &          100   &         1000  &         10000 \\
@@ -462,8 +584,12 @@ Mu=0.1  C=100 W H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=100 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -477,8 +603,12 @@ Mu=0.1  C=100 W V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=100 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &          100   &         1000  &         10000 \\
@@ -492,8 +622,12 @@ Mu=0.01  C=100 W H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=100 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -507,8 +641,12 @@ Mu=0.01  C=100 W V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=100 W H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &          100   &         1000  &         10000 \\
@@ -522,8 +660,12 @@ Mu=0.001  C=100 W H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=100 W V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -537,8 +679,12 @@ Mu=0.001  C=100 W V:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=1 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -552,8 +698,12 @@ Mu=0.1  C=1 C H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=1 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -567,8 +717,12 @@ Mu=0.1  C=1 C V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=1 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -582,8 +736,12 @@ Mu=0.01  C=1 C H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=1 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -597,8 +755,12 @@ Mu=0.01  C=1 C V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=1 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -612,8 +774,12 @@ Mu=0.001  C=1 C H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=1 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -627,8 +793,12 @@ Mu=0.001  C=1 C V:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=10 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -642,8 +812,12 @@ Mu=0.1  C=10 C H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=10 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -657,8 +831,12 @@ Mu=0.1  C=10 C V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=10 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -672,8 +850,12 @@ Mu=0.01  C=10 C H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=10 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -687,8 +869,12 @@ Mu=0.01  C=10 C V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=10 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -702,8 +888,12 @@ Mu=0.001  C=10 C H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=10 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -717,8 +907,12 @@ Mu=0.001  C=10 C V:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=100 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -732,8 +926,12 @@ Mu=0.1  C=100 C H:
 
 
 
+\bigskip
+
 
 Mu=0.1  C=100 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -747,8 +945,12 @@ Mu=0.1  C=100 C V:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=100 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &          100   &         1000  &         10000 \\
@@ -762,8 +964,12 @@ Mu=0.01  C=100 C H:
 
 
 
+\bigskip
+
 
 Mu=0.01  C=100 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -777,8 +983,12 @@ Mu=0.01  C=100 C V:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=100 C H:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -792,8 +1002,12 @@ Mu=0.001  C=100 C H:
 
 
 
+\bigskip
+
 
 Mu=0.001  C=100 C V:
+
+
 \begin{tabular}{lllll}
 \toprule
 {} &         10    &         100   &         1000  &         10000 \\
@@ -806,5 +1020,7 @@ Mu=0.001  C=100 C V:
 \end{tabular}
 
 
+
+\bigskip
 
 
