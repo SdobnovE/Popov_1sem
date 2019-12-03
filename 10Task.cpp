@@ -394,37 +394,42 @@ void solve10Task()
         mat._up.push_back(0);
         b.push_back(0);
 
-       for (int m = 1; m < M; m++)
+       double mm = 1. / H_n_1[0];
+        
+        for (int j = 1; j <= M; j++)
         {
+            if (1. / H_n_1[j] > mm)
+            {
+                mm = 1. / H_n_1[j];
+            }
+        }
+        mm = Mu * mm;
+
+        for (int j = 1; j < M; j++)
+        {
+            mat._down.push_back(
+                -(V_n[j] + V_n[j - 1]) / (6 * h)
+                - mm / (h * h)
+            );
+
+            mat._main.push_back(
+                1. / t 
+                + 2. * mm / (h * h)
+            );
             
-
-            mat._main.push_back (
-                                 1 / t
-                                 + 2 * Mu / (h * h) / H_n_1[m]
-            );
-
-            mat._down.push_back (
-                                 -Mu / (h * h) / H_n_1[m]
-                                 - V_n[m - 1] / (6 * h)
-                                 - V_n[m] / (6 * h)
-            );
-
             mat._up.push_back(
-                               -Mu / (h * h) / H_n_1[m]
-                               + V_n[m + 1] / (6 * h)
-                               + V_n[m] / (6 * h)
+                (V_n[j] + V_n[j + 1]) / (6*h)
+                - mm / (h * h)
             );
 
             b.push_back(
-                        f(i, m)
-                        + V_n[m] / t
-                        - C * (H_n_1[m + 1] - H_n_1[m - 1]) / (2 * h) / H_n_1[m]
-                        
+                V_n[j] / t
+                - C * (H_n_1[j + 1] - H_n_1[j - 1]) / (2. * h * H_n_1[j])
+                - (mm - Mu / H_n_1[j]) * (V_n[j + 1] - 2 * V_n[j] + V_n[j - 1]) / (h * h)
+                + f(i, j)
             );
-
+            
         }
-
-
 
         mat._down.push_back(0);
         mat._main.push_back(1);
