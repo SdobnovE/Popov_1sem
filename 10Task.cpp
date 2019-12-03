@@ -238,7 +238,7 @@ residual count_residual(const vector<double>& H, const vector<double>& V)
 
 
         for (int i = 1; i < M; i++)//1...N
-            scal_H += (Ro_0(h * i, 1) - H[i]) * (Ro_0(h * i, 1) - H[i]); 
+            scal_H += (Ro_0(h * i, 1) - H[i]) * (Ro_0(h * i, 1) - H[i]);
             
         for (int i = 1; i < M; i++)//1...N
             scal_V += (u_0 (h * i, 1) - V[i]) * (u_0 (h * i, 1) - V[i]);
@@ -247,10 +247,10 @@ residual count_residual(const vector<double>& H, const vector<double>& V)
         scal_V *= h;
         
         scal_H += 0.5 * h * ((Ro_0(0, 1) - H[0]) * (Ro_0(0, 1) - H[0])
-                             + (Ro_0(h * N, 1) - H[N]) * (Ro_0(h * N, 1) - H[N])
+                             + (Ro_0(h * M, 1) - H[M]) * (Ro_0(h * M, 1) - H[M])
                             );
         scal_V += 0.5 * h * ((u_0 (h * 0, 1) - V[0]) * (u_0 (h * 0, 1) - V[0])
-                             + (u_0 (h * N, 1) - V[N]) * (u_0 (h * N, 1) - V[N]));
+                             + (u_0 (h * M, 1) - V[M]) * (u_0 (h * M, 1) - V[M]));
 
         resid.first = scal_H;
         resid.second = scal_V;
