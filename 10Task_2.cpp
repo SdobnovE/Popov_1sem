@@ -7,22 +7,22 @@
 using namespace std;
 typedef  pair<double, double> residual;
 residual final_residual;
-double Mu = 0.01;
+double Mu = 0.1;
 double C = 1.0;
 const double X = 10;
 const double T = 1;
 string norm;
-int N = 400;//по t
-int M = 400;// по x
-double t = T / N;
-double h = X / M; 
+int N = 0;//по t
+int M = 100;// по x
+double t = 0.1;
+double h = 0.1; 
 const double EPS = 1e-16;
 
 double f0 (double x, double t);
 double f (double x, double t);
 double Ro_0 (double x, double t);
 double u_0(double x, double t);
-residual count_residual(const vector<double>& H, const vector<double>& V);
+
 pair<vector<double>, vector<double>> solve10Task();
 
 
@@ -140,118 +140,19 @@ double f (int i, int j)
 double Ro_0 (double x, double t)
 {
     if (x < 4.5 || x > 5.5)
-        return 0;
-    else
         return 1;
+    else
+        return 2;
     
 }
 
 double u_0 (double x, double t)
 {
-    double u = cos(2 * M_PI * t) * sin (M_PI * x * x / 100);//+
-    return u;
+    double u = 0;//+
+    return 0;
 }
 
-residual count_residual(const vector<double>& H, const vector<double>& V)
-{
-    residual resid;
-    resid.first = 0;
-    resid.second = 0;
-    
-   if (norm == "C")
-    {
-        for (int i = 0; i < M + 1; i++)
-        {
-            if (fabs (Ro_0(h * i, 1) - H[i]) > resid.first)
-                resid.first = fabs (Ro_0(h * i, 1) - H[i]);
-        }
-        
-        for (int i = 0; i < M + 1; i++)
-        {
-            if (fabs (u_0 (h * i, 1) - V[i]) > resid.second)
-                resid.second = fabs (u_0 (h * i, 1) - V[i]);
-        }
-    }
 
-    if (norm == "L2")
-    {
-        double scal_V = 0.0;
-        double scal_H = 0.0;
-
-        
-
-
-        for (int i = 1; i < M; i++)//1...N
-            scal_H += (Ro_0(h * i, 1) - H[i]) * (Ro_0(h * i, 1) - H[i]);
-            
-        for (int i = 1; i < M; i++)//1...N
-            scal_V += (u_0 (h * i, 1) - V[i]) * (u_0 (h * i, 1) - V[i]);
-        
-        scal_H *= h;
-        scal_V *= h;
-        
-        scal_H += 0.5 * h * ((Ro_0(0, 1) - H[0]) * (Ro_0(0, 1) - H[0])
-                             + (Ro_0(h * M, 1) - H[M]) * (Ro_0(h * M, 1) - H[M])
-                            );
-        scal_V += 0.5 * h * ((u_0 (h * 0, 1) - V[0]) * (u_0 (h * 0, 1) - V[0])
-                             + (u_0 (h * M, 1) - V[M]) * (u_0 (h * M, 1) - V[M]));
-
-        resid.first = sqrt (scal_H);
-        resid.second = sqrt (scal_V);
-    }
-
-    if (norm == "W")
-    {
-        double scal_V = 0.0;
-        double scal_H = 0.0;
-
-        
-
-
-        for (int i = 1; i < M; i++)//1...N
-            scal_H += (Ro_0(h * i, 1) - H[i]) * (Ro_0(h * i, 1) - H[i]);
-            
-        for (int i = 1; i < M; i++)//1...N
-            scal_V += (u_0 (h * i, 1) - V[i]) * (u_0 (h * i, 1) - V[i]);
-        
-        scal_H *= h;
-        scal_V *= h;
-        
-        scal_H += 0.5 * h * ((Ro_0(0, 1) - H[0]) * (Ro_0(0, 1) - H[0])
-                             + (Ro_0(h * M, 1) - H[M]) * (Ro_0(h * M, 1) - H[M])
-                            );
-        scal_V += 0.5 * h * ((u_0 (h * 0, 1) - V[0]) * (u_0 (h * 0, 1) - V[0])
-                             + (u_0 (h * M, 1) - V[M]) * (u_0 (h * M, 1) - V[M]));
-
-        resid.first = scal_H;
-        resid.second = scal_V;
-        
-        double temp1 = 0.;
-        for (int i = 0; i < M; i++)
-        {
-            temp1 += (u_0 (h * (i), 1) - V[i] - u_0 (h * (i + 1), 1) + V[i + 1]) / h * 
-                     (u_0 (h * (i), 1) - V[i] - u_0 (h * (i + 1), 1) + V[i + 1]) / h;
-        }
-        temp1 *= h;
-
-        double temp2 = 0.;
-        for (int i = 0; i < M; i++)
-        {
-            temp2 += (Ro_0 (h * (i), 1) - H[i] + H[i + 1] - Ro_0 (h * (i + 1), 1)) / h * 
-                     (Ro_0 (h * (i), 1) - H[i] + H[i + 1] - Ro_0 (h * (i + 1), 1)) / h;
-        }
-        temp2 *= h;
-        resid.first = fabs (resid.first + temp2);
-        resid.second = fabs (resid.second + temp1);
-        
-
-
-    }
-
-    
-    
-    return resid;
-}
 
 pair<vector<double>, vector<double>> solve10Task()
 {
@@ -272,6 +173,7 @@ pair<vector<double>, vector<double>> solve10Task()
 
     for (int i = 1; i < N + 1; i++)
     {
+        
         H_n.clear();
         V_n.clear();
         for (auto i1 : H_n_1)
@@ -407,10 +309,7 @@ pair<vector<double>, vector<double>> solve10Task()
         b.push_back(0);
 
         mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое    
-        
-        
-        
-        
+           
     }
     return pair<vector<double>, vector<double>>(H_n_1, V_n_1);
     
@@ -419,31 +318,24 @@ pair<vector<double>, vector<double>> solve10Task()
 
 int main(int argc, char* argv[])
 {
-    if (argc != 6)
+    if (argc != 2)
     {
-        printf("USAGE: Mu, C, N_t, M_x, norm\n");
+        printf("USAGE: N\n");
         return -1;
     }
 
-    sscanf(argv[1], "%lf", &Mu);
-    sscanf(argv[2], "%lf", &C);
-    sscanf(argv[3], "%d", &N);
-    //printf("argv[3] %s\n", argv[3]);
-    sscanf(argv[4], "%d", &M);
+    sscanf(argv[1], "%d", &N);
+    //printf("%d\n", N);
     
-    norm = argv[5];
-    //printf("HA %f %f %d %d\n", Mu, C, N, M);
-    t = T / N;
-    h = X / M; 
-
+    
     auto result = solve10Task();
-    vector<double> b;
-    vector<double> a;
+    
     for (const auto& i : result.first)
     {
         printf ("%e ", i);
     }
     printf("\n");
+
     for (const auto& i : result.second)
     {
         printf ("%e ", i);
