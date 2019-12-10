@@ -139,13 +139,15 @@ double f (int i, int j)
 
 double Ro_0 (double x, double t)
 {
-    double u = 0;//+
+    x =x ; t=t;
+
     return 1;
     
 }
 
 double u_0 (double x, double t)
 {
+    t=t;
 
     if (x < 4.5 || x > 5.5)
         return 0;
