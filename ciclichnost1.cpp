@@ -13,9 +13,10 @@ const double X = 10;
 const double T = 1;
 string norm;
 int N = 0;//по t
+int K = 0;//по t
 int M = 100;// по x
 double t = 0.1;
-double h = 0.1;
+double h = 0.1; 
 const double EPS = 1e-16;
 
 double f0 (double x, double t);
@@ -51,7 +52,7 @@ class Matrix
             for (int i = 0; i < _len - 1; i++)
                 printf ("%e ", _down[i]);
             printf("\n");
-
+            
         }
 
         double residual(const vector<double>& f, vector<double>& x)
@@ -69,7 +70,7 @@ class Matrix
         {
             x.clear();
             x.push_back (_main[0] * f[0] + _up[0] * f[1]);
-
+            
             for (int i = 1; i < _len; i++)
             {
                 x.push_back (_main[i] * f[i] + _up[i] * f[i + 1] + _down[i - 1] * f[i - 1]);
@@ -78,11 +79,11 @@ class Matrix
         }
 
         void three_diag_meth (const vector<double>& f, vector<double>& x)
-        {
+        {  
             //В начале диагонали _down должен быть 0
             auto it = _down.begin();
             _down.insert(it, 0);
-             // _up = B
+             // _up = B 
             // _main = C
             // _down = A
             //WIKIPEDIA
@@ -98,14 +99,14 @@ class Matrix
 
             for (int i = 2; i < _len; i++)
             {
-                alpha.push_back (-_up[i - 1] /
+                alpha.push_back (-_up[i - 1] / 
                         (_down[i - 1] * alpha[i - 1] + _main[i - 1]));
-
-                beta.push_back ( (f[i - 1] - _down[i - 1] * beta.back()) /
+                
+                beta.push_back ( (f[i - 1] - _down[i - 1] * beta.back()) / 
                         (_down[i - 1] * alpha[i - 1] + _main[i - 1]));
             }
 
-            x.push_back ((f.back() - _down.back() * beta.back()) /
+            x.push_back ((f.back() - _down.back() * beta.back()) / 
                         (_main.back() + _down.back() * alpha.back())
             );
 
@@ -116,7 +117,7 @@ class Matrix
 
             reverse(begin(x), end(x));
             _down.erase(_down.begin());//Удаляем начальный
-
+            
 
         }
 };
@@ -139,23 +140,18 @@ double f (int i, int j)
 
 double Ro_0 (double x, double t)
 {
-    x =x ; t=t;
-
+    t=t;
+    x=x;
     return 1;
     
 }
 
 double u_0 (double x, double t)
 {
-    t=t;
-
-    if (x < 4.5 || x > 5.5)
-        return 0;
-    else
-        return 1;
-    
+    t=t;x=x;
+//    double u = 0;//+
+    return sin (K * M_PI * x);
 }
-
 
 
 
@@ -163,22 +159,22 @@ pair<vector<double>, vector<double>> solve10Task()
 {
     vector<double> H_n;
     vector<double> H_n_1;
-
+    
     vector<double> V_n;
     vector<double> V_n_1;
 
     for (int m = 0; m < M + 1; m++)//Начальные условия
     {
-
+        
         H_n_1.push_back (Ro_0 (h * m, 0));
         V_n_1.push_back (u_0 (h * m, 0));
     }//Ok
 
-
+    
 
     for (int i = 1; i < N + 1; i++)
     {
-
+        
         H_n.clear();
         V_n.clear();
         for (auto i1 : H_n_1)
@@ -191,11 +187,11 @@ pair<vector<double>, vector<double>> solve10Task()
         vector<double> b;
 
         mat._main.push_back (
-                            1. / t
+                            1. / t 
                             - V_n[0] / (2 * h)
         );
-
-        mat._up.push_back (V_n[1] / (2 * h));
+        
+        mat._up.push_back (V_n[1] / (2 * h)); 
 
         b.push_back(
                     H_n[0] / t
@@ -204,16 +200,16 @@ pair<vector<double>, vector<double>> solve10Task()
                                             H_n[2] * V_n[2] - 2 * H_n[1] * V_n[1] + H_n[0] * V_n[0]
                                             - 0.5 * (H_n[3] * V_n[3] - 2 * H_n[2] * V_n[2] + H_n[1] * V_n[1])
                                             + H_n[0] * (
-                                                        V_n[2] - 2 * V_n[1] + V_n[0]
+                                                        V_n[2] - 2 * V_n[1] + V_n[0] 
                                                         - 0.5 * (V_n[3] - 2 * V_n[2] + V_n[1])
                                                     )
                                         )
-
+                    
                     + f0(i, 0)
         );
 
 
-
+        
 
         for (int m = 1; m < M; m++)////Сто проц верный цикл
         {
@@ -226,10 +222,10 @@ pair<vector<double>, vector<double>> solve10Task()
 
             mat._up.push_back(
                                V_n[m] / (4 * h)
-                               + V_n[m + 1] / (4 * h)
+                               + V_n[m + 1] / (4 * h) 
             );
 
-
+            
             b.push_back(
                         H_n[m] / t
                         - H_n[m] * (V_n[m + 1] - V_n[m - 1]) / (4 * h)
@@ -244,7 +240,7 @@ pair<vector<double>, vector<double>> solve10Task()
 
         mat._down.push_back(
                   -V_n[M - 1] / (2. * h)
-        );
+        );//Возможно минус
 
         b.push_back(
                     H_n[M] / t
@@ -259,10 +255,10 @@ pair<vector<double>, vector<double>> solve10Task()
                                )
                     + f0(i, M)
         );
-
+        
 
         mat.three_diag_meth(b, H_n_1);//Посчитали значение H на n+1 слое
-
+        
         mat._main.clear();
         mat._up.clear();
         mat._down.clear();
@@ -273,7 +269,7 @@ pair<vector<double>, vector<double>> solve10Task()
         b.push_back(0);
 
        double mm = 1. / H_n_1[0];
-
+        
         for (int j = 1; j <= M; j++)
         {
             if (1. / H_n_1[j] > mm)
@@ -291,10 +287,10 @@ pair<vector<double>, vector<double>> solve10Task()
             );
 
             mat._main.push_back(
-                1. / t
+                1. / t 
                 + 2. * mm / (h * h)
             );
-
+            
             mat._up.push_back(
                 (V_n[j] + V_n[j + 1]) / (6*h)
                 - mm / (h * h)
@@ -306,37 +302,35 @@ pair<vector<double>, vector<double>> solve10Task()
                 - (mm - Mu / H_n_1[j]) * (V_n[j + 1] - 2 * V_n[j] + V_n[j - 1]) / (h * h)
                 + f(i, j)
             );
-
+            
         }
 
         mat._down.push_back(0);
         mat._main.push_back(1);
         b.push_back(0);
 
-        mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое
-
+        mat.three_diag_meth(b, V_n_1);//Посчитали значение V на n+1 слое    
+           
     }
     return pair<vector<double>, vector<double>>(H_n_1, V_n_1);
-
+    
 }
 
 
 int main(int argc, char* argv[])
 {
-    if (argc != 3)
+    if (argc != 2)
     {
-        printf("USAGE: N M\n");
+        printf("USAGE: N\n");
         return -1;
     }
 
     sscanf(argv[1], "%d", &N);
-    sscanf(argv[2], "%d", &M);
-    h = 10. / M;
     //printf("%d\n", N);
-
-
+    
+    
     auto result = solve10Task();
-
+    
     for (const auto& i : result.first)
     {
         printf ("%e ", i);
@@ -348,7 +342,7 @@ int main(int argc, char* argv[])
         printf ("%e ", i);
     }
     printf("\n");
-
-
+    
+    
     return 0;
 }
