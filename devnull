@@ -1,5 +1,5 @@
 
 ------------------------------------------------------------
-total allocation requests:   9650 ; max. mem used 168 kBytes
+total allocation requests: 9600050 ; max. mem used 168 kBytes
 leak      0 Bytes in 0 blocks
-WORK TIME - 00:00:00.03
+WORK TIME - 00:00:16.29
