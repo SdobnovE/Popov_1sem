@@ -9,13 +9,15 @@ typedef  pair<double, double> residual;
 residual final_residual;
 double Mu = 0.1;
 double C = 1.0;
+double K;
 const double X = 10;
 const double T = 1;
 string norm;
 int N = 0;//по t
-int M = 100;// по x
+// по x
 double t = 0.1;
-double h = 0.1;
+double h = 0.001;
+int M = 10/0.001;
 const double EPS = 1e-16;
 
 double f0 (double x, double t);
@@ -139,11 +141,8 @@ double f (int i, int j)
 
 double Ro_0 (double x, double t)
 {
-    t=t;
-    if (x < 4.5 || x > 5.5)
-        return 1;
-    else
-        return 2;
+    x=x;t=t;
+    return 2 + sin (K * M_PI * x);
 
 }
 
@@ -322,12 +321,12 @@ int main(int argc, char* argv[])
 {
     if (argc != 3)
     {
-        printf("USAGE: N M\n");
+        printf("USAGE: N K\n");
         return -1;
     }
 
     sscanf(argv[1], "%d", &N);
-    sscanf(argv[2], "%d", &M);
+    sscanf(argv[2], "%lf", &K);
     h = 10. / M;
     //printf("%d\n", N);
 

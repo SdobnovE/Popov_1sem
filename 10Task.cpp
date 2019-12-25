@@ -270,8 +270,8 @@ residual count_residual(const vector<double>& H, const vector<double>& V)
                      (Ro_0 (h * (i), 1) - H[i] + H[i + 1] - Ro_0 (h * (i + 1), 1)) / h;
         }
         temp2 *= h;
-        resid.first = fabs (resid.first + temp2);
-        resid.second = fabs (resid.second + temp1);
+        resid.first = sqrt(fabs (resid.first + temp2));
+        resid.second = sqrt(fabs (resid.second + temp1));
         
 
 
